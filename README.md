@@ -20,9 +20,11 @@ Overtime in Beijing is much severe than in other cities.
 
 Companies without 996.
 996 白名单（周末双休、朝九晚五的公司）：
+
 https://github.com/juwikuang/51job_survey_py/blob/master/whitelist.txt
 
 996 Balcklist. 996黑名单：
+
 https://github.com/juwikuang/51job_survey_py/blob/master/blacklist.txt
 
 for more, look into the code. especially the jupyter notebooks.
