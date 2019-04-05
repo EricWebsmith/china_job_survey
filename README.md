@@ -8,7 +8,7 @@ This repo is to look into Chinese Job website and make stats.
 ```
 data[data.monthly_salary<40000].monthly_salary.hist()
 ```
-[!Salary Distribution](https://github.com/juwikuang/51job_survey_py/blob/master/images/salary_distribution.png?raw=true)
+![Salary Distribution](https://github.com/juwikuang/51job_survey_py/blob/master/images/salary_distribution.png?raw=true)
 
 ## 996(Overtime) Survey/996调查
 996 means working from 9am to 9pm, 6 days a week.
