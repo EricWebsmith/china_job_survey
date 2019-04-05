@@ -1,0 +1,3 @@
+--update _51jobs set career_software_engineer=0 where career_algorithm=1 or career_architect=1
+--改为以万元为单位
+--update _51jobs set monthly_salary=monthly_salary/10000
