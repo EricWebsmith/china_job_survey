@@ -10,10 +10,23 @@ data[data.monthly_salary<40000].monthly_salary.hist()
 ```
 ![Salary Distribution](https://github.com/juwikuang/51job_survey_py/blob/master/images/salary_distribution.png?raw=true)
 
+## Programming Languages 编程语言
+
+| - | Langueage       | Percentage |
+|---|------------|--------|
+| 1 | java       | 29.28% |
+| 2 | cpp        | 16.08% |
+| 3 | javascript | 15.09% |
+| 4 | c_sharp    | 10.95% |
+| 5 | python     | 8.21%  |
+
+more details:
+https://github.com/juwikuang/job_survey/blob/master/programming_language.ipynb
+
 ## 996(Overtime) Survey/996调查
 996 means working from 9am to 9pm, 6 days a week.
 996 Positions have a significant higher salary(25%) than the 996 positions.
-996的职位比非996的职位工资高25%。
+996的职位比非996的职位工资高**25%**。
 
 Overtime in Beijing is much severe than in other cities.
 北京的996现象最严重
