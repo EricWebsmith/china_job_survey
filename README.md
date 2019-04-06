@@ -10,7 +10,7 @@ data[data.monthly_salary<40000].monthly_salary.hist()
 ```
 ![Salary Distribution](https://github.com/juwikuang/51job_survey_py/blob/master/images/salary_distribution.png?raw=true)
 
-##Programming Languages 编程语言
+## Programming Languages 编程语言
 
 | - | Langueage       | Percentage |
 |---|------------|--------|
