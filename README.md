@@ -5,10 +5,8 @@ This repo is to look into Chinese Job website and make stats.
 根据招聘网站，统计程序员就业信息。
 
 ## Salary 程序员工资
-```
-data[data.monthly_salary<40000].monthly_salary.hist()
-```
-![Salary Distribution](https://github.com/juwikuang/51job_survey_py/blob/master/images/salary_distribution.png?raw=true)
+
+![Salary Distribution](https://github.com/juwikuang/china_job_survey/blob/master/images/201904_salary_by_cities.png?raw=true)
 
 ## Programming Languages 编程语言
 
