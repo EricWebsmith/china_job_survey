@@ -20,6 +20,8 @@ data[data.monthly_salary<40000].monthly_salary.hist()
 | 4 | c_sharp    | 10.95% |
 | 5 | python     | 8.21%  |
 
+![](https://github.com/juwikuang/job_survey/blob/master/images/2019_04_pl_word_cloud.png?raw=true)
+
 more details:
 https://github.com/juwikuang/job_survey/blob/master/programming_language.ipynb
 
