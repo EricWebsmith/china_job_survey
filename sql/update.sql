@@ -28,4 +28,10 @@
 --(1147 rows affected)
 --Linux Linux CentOS Ubuntu  redhat
 
+--select * from _201904 where title like '%≈¿≥Ê%'
+--ALTER TABLE _201904 ADD career_spider bit DEFAULT 0 NOT NULL;
+--update _201904 set career_spider=1  where title like '%≈¿≥Ê%'
+--update _201904 set career_software_engineer=0  where career_spider=1
+
+
 
