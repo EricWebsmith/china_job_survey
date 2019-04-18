@@ -503,16 +503,11 @@ class Job():
             and self.check_working_experience() and self.check_edu() \
             and self.check_company_size()
 
-
 def in_996_list(company_title):
     return any(icu996 in company_title for icu996 in icu996companies)
 
-
 def in_non_996_list(company_title):
     return any(non996 in company_title for non996 in non996companies)
-
-
-
 
 def printObject(o):
     print(inspect.getmembers(o))
