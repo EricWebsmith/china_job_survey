@@ -1,0 +1,33 @@
+digraph Tree {
+node [shape=box, style="filled, rounded", color="black", fontname=helvetica] ;
+edge [fontname=helvetica] ;
+0 [label=<career_software_engineer?<br/>gini = 0.495<br/>samples = 1007<br/>value = [553, 454]<br/>class = high>, fillcolor="#e581392e"] ;
+1 [label=<tag_five_insurance?<br/>gini = 0.251<br/>samples = 312<br/>value = [266, 46]<br/>class = high>, fillcolor="#e58139d3"] ;
+0 -> 1 [labeldistance=2.5, labelangle=45, headlabel="no"] ;
+2 [label=<company_type_listed?<br/>gini = 0.402<br/>samples = 61<br/>value = [44, 17]<br/>class = high>, fillcolor="#e581399c"] ;
+1 -> 2 ;
+3 [label=<gini = 0.346<br/>samples = 54<br/>value = [42, 12]<br/>class = high>, fillcolor="#e58139b6"] ;
+2 -> 3 ;
+4 [label=<gini = 0.408<br/>samples = 7<br/>value = [2, 5]<br/>class = low>, fillcolor="#399de599"] ;
+2 -> 4 ;
+5 [label=<industry_medical?<br/>gini = 0.204<br/>samples = 251<br/>value = [222, 29]<br/>class = high>, fillcolor="#e58139de"] ;
+1 -> 5 ;
+6 [label=<gini = 0.183<br/>samples = 245<br/>value = [220, 25]<br/>class = high>, fillcolor="#e58139e2"] ;
+5 -> 6 ;
+7 [label=<gini = 0.444<br/>samples = 6<br/>value = [2, 4]<br/>class = low>, fillcolor="#399de57f"] ;
+5 -> 7 ;
+8 [label=<edu_associate?<br/>gini = 0.485<br/>samples = 695<br/>value = [287, 408]<br/>class = low>, fillcolor="#399de54c"] ;
+0 -> 8 [labeldistance=2.5, labelangle=-45, headlabel="yes"] ;
+9 [label=<pl_go?<br/>gini = 0.499<br/>samples = 546<br/>value = [259, 287]<br/>class = low>, fillcolor="#399de519"] ;
+8 -> 9 ;
+10 [label=<gini = 0.487<br/>samples = 414<br/>value = [173, 241]<br/>class = low>, fillcolor="#399de548"] ;
+9 -> 10 ;
+11 [label=<gini = 0.454<br/>samples = 132<br/>value = [86, 46]<br/>class = high>, fillcolor="#e5813977"] ;
+9 -> 11 ;
+12 [label=<pl_cpp?<br/>gini = 0.305<br/>samples = 149<br/>value = [28, 121]<br/>class = low>, fillcolor="#399de5c4"] ;
+8 -> 12 ;
+13 [label=<gini = 0.263<br/>samples = 135<br/>value = [21, 114]<br/>class = low>, fillcolor="#399de5d0"] ;
+12 -> 13 ;
+14 [label=<gini = 0.5<br/>samples = 14<br/>value = [7, 7]<br/>class = high>, fillcolor="#e5813900"] ;
+12 -> 14 ;
+}
