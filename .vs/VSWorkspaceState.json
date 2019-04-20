@@ -1,7 +1,13 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\geo",
+    "\\notebook",
+    "\\py",
+    "\\results",
+    "\\roles",
+    "\\sql"
   ],
-  "SelectedNode": "\\feature_engineering_v2.py",
+  "SelectedNode": "\\notebook",
   "PreviewInSolutionExplorer": false
 }

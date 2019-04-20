@@ -284,7 +284,7 @@ class Job():
         elif (tag=='150-500人'):
             self.company_size='150-500'
         elif (tag=='500-1000人'):
-            self.company_size='500-1000人'
+            self.company_size='500-1000'
         elif (tag=='1000-5000人'):
             self.company_size='1000-5000'
         elif (tag=='5000-10000人'):
@@ -468,7 +468,7 @@ def file2job(file, city):
         if career=='算法工程师':
             job.career='算法工程师'
         if career in ['系统架构设计师','网站架构设计师']:
-            job.career='架构设计师'
+            job.career='系统架构师'
 
     if '爬虫' in job.title:
         job.career='爬虫工程师'
@@ -567,8 +567,8 @@ def file2job(file, city):
     
 
     #继续判断是不是架构师
-    if '架构师' in job_description_lower:
-        job.career='系统架构师'
+    #if '架构师' in job_description_lower:
+    #    job.career='系统架构师'
     #继续判断是不是算法工程师
     if 'tensorflow' in job_description_lower \
         or 'keras' in job_description_lower \
