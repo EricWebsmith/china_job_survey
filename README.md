@@ -21,7 +21,7 @@ This repo is to look into Chinese Job website and make stats.
 ![](https://github.com/juwikuang/job_survey/blob/master/images/2019_04_pl_word_cloud.png?raw=true)
 
 more details:
-https://github.com/juwikuang/job_survey/blob/master/programming_language.ipynb
+https://github.com/juwikuang/china_job_survey/blob/master/notebook/programming_language.ipynb
 
 ## 996(Overtime) Survey/996调查
 996 means working from 9am to 9pm, 6 days a week.
@@ -34,14 +34,10 @@ Overtime in Beijing is much severe than in other cities.
 Companies without 996.
 996 白名单（周末双休、朝九晚五的公司）：
 
-https://github.com/juwikuang/51job_survey_py/blob/master/whitelist.txt
-
-996 Balcklist. 996黑名单：
-
-https://github.com/juwikuang/51job_survey_py/blob/master/blacklist.txt
+https://github.com/juwikuang/china_job_survey/blob/master/docs/index.html
 
 for more, look into the code. especially the jupyter notebooks.
 更多信息，查看源代码（主要是jupyter notebook）:
 
-https://github.com/juwikuang/51job_survey_py/blob/master/Survey.ipynb
-https://github.com/juwikuang/51job_survey_py/blob/master/996_Survey.ipynb
+https://github.com/juwikuang/china_job_survey/blob/master/notebook/china_v2.ipynb
+https://github.com/juwikuang/china_job_survey/blob/master/notebook/996_Survey.ipynb
