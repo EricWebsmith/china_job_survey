@@ -18,10 +18,21 @@ import pandas as pd
 from db import get_conn
 import threading
 
+def nothing():
+    print("hi")
+    print("hi")
+
+    return 0
+
+
+
+year_month='201904'
+
 class Job():
     #basic info
     job_id=""
     title=""
+    page_title=''
     
     job_summary=''
     
@@ -40,7 +51,9 @@ class Job():
     monthly_salary=0
     
     #职能类别 软件工程师 算法工程师 系统架构设计师
+    zhinengleibie=''
     career=''
+
 
     
     #手机开发
@@ -98,6 +111,7 @@ class Job():
     pl_julia=False
     pl_haskell=False
     pl_delphi=False
+
     
     #database
     db_Oracle=False
@@ -141,6 +155,7 @@ class Job():
     expert_embed=False
     expert_gis=False
     
+    province=''
     city=''
     #languages
     english=False
@@ -200,6 +215,7 @@ class Job():
         self.tag_rest_two_days=('做五休二' in tags or '周末双休' in tags or '朝九晚五' in tags)
         self.tag_stock=('股票期权' in tags)
         return self
+
     
     def get_salary(self, salary_string):
         #零时工，不统计
@@ -434,14 +450,18 @@ def get_company_tags(company_link):
     info_string=ltype_tag.text
     return [info.strip() for info in info_string.split('|')]
 
-def file2job(file, city):
+def file2job(file, zhinengleibie, province):
     job=Job()
-    job.city=city
+    job.zhinengleibie=zhinengleibie
+    job.province=province
     job.job_id=path.split(file)[-1].replace(".html","")
     
     if job.job_id in ['110455749','77612262','107681687']:
         return None
     
+    #page title
+
+
     #print(file)
     content=""
     try:
@@ -454,7 +474,9 @@ def file2job(file, city):
 
     
     soup=BeautifulSoup(content, "html.parser")
-    
+    job.page_title=soup.select_one('title').text
+    if '异地招聘' in job.page_title:
+        return None
     #职业 start
     #首先判断职业，如果职业不是程序员，直接pass
     #career=soup.find('span',{'class':'label'},text='职能类别：').find_next('a').text.strip()
@@ -499,27 +521,33 @@ def file2job(file, city):
     
     job.title=soup.find("h1").text.strip()
 
-    if any(key in job.title for key in ['测试','前端','信息工程师','运维','经理','嵌入式','讲师','老师','负责人','合伙人','计算机技术员','主任','总监','cto','需求工程师','需求分析','系统集成工程师','系统工程师','系统分析师','计算机辅助设计','DBA','实施','售前','售后','数据库']):
+    if any(key in job.title for key in ['安全工程师','seo','测试','前端','信息工程师','运维','经理','嵌入式','讲师','老师','负责人','合伙人','计算机技术员','主任','总监','cto','需求工程师','需求分析','系统集成工程师','系统工程师','系统分析师','计算机辅助设计','DBA','实施','售前','售后','数据库']):
         return None
     
     job_title_lower=job.title.lower()
-    if '专家' in job_title_lower:    
-        expert_expert=False
+    if '专家' in job_title_lower:   
+        job.expert_expert=False
     if 'blockchain' in job_title_lower or '区块链' in job_title_lower:
-        expert_blockchain=False
+        job.expert_blockchain=False
     if 'adas' in job_title_lower:
-        expert_adas=False
+        job.expert_adas=False
     if '嵌入式' in job_title_lower:
-        expert_embed=False
+        job.expert_embed=False
     if 'gis' in job_title_lower:
-        expert_gis=False
+        job.expert_gis=False
+
+    if '架构师' in job_title_lower:
+        job.career='系统架构师'
+    if '算法工程师' in job_title_lower:
+        job.career='算法工程师'
 
 
     #'深圳-福田区|5-7年经验|本科|招1人|04-01发布'
     job.job_summary=soup.select_one(".msg").text.replace('\xa0','').replace(' ','').strip()
     #print(basic_info)
     infos=job.job_summary.split('|')
-    
+    #first location
+    job.city=infos[0].split('-')[0]
     #remove the first one - location
     infos=infos[1:]
     for info in infos:
@@ -544,7 +572,6 @@ def file2job(file, city):
             job.publish_date=datetime.strptime(date_string, '%Y-%m-%d')
             weekday=job.publish_date.weekday()
             job.published_on_weekend=weekday>4
-
 
         #language
         if '英语' in info or '英文' in info:
@@ -672,28 +699,33 @@ def file2job(file, city):
     if job.published_on_weekend:
         job._996_yes=True
     
+    if job.company_title in ['青岛云指针软件有限公司']:
+        job._996_no=False
+        job._996_yes=False
+    
     return job
 
 def try_rename(file):
-    new_file=file.replace("51jobs","51jobs_b")
+    #return
+    new_file=file.replace("51jobs_{}".format(year_month),"51jobs_{}_b".format(year_month))
     if path.isfile(new_file):
         os.remove(file)
     else:
         os.rename(file, new_file) 
 
-def file2db(file, city):
+def file2db(file, zhinengleibie, province):
     conn=get_conn()
 
         
     filename=path.split(file)[-1]
     job_id=filename.replace(".html","")           
     
-    exists=conn.execute("select count(1) from _201904v2 where job_id='{0}'".format(job_id)).fetchall()[0][0]
+    exists=conn.execute("select count(1) from _{} where job_id='{}'".format(year_month, job_id)).fetchall()[0][0]
     if exists:
         try_rename(file)
         return
     print(file)
-    job=file2job(file, city)
+    job=file2job(file, zhinengleibie, province)
     if not job:
         try_rename(file)
         return
@@ -701,17 +733,37 @@ def file2db(file, city):
     data=pd.DataFrame(columns=get_featurenames(job))
     l=object2list(job)
     data.loc[job.job_id]=l
-    data.to_sql("_201904v2",conn,if_exists="append", index=False)
+    data.to_sql("_"+year_month,conn,if_exists="append", index=False)
 
     conn.close()
     try_rename(file)   
 
-def city2db(city_folder, city):
+def city2db(data_folder,zhinengleibie, province):
+    city_folder=path.join(data_folder,zhinengleibie, province)
     files = glob(path.join(city_folder,"*.html"))
     for file in files:
-        file2db(file, city) 
-    
+        file2db(file, zhinengleibie, province) 
+
 def main():
+    provinces=['北京','上海','广东','深圳','天津','重庆','江苏','浙江','四川','海南','福建','山东','江西','广西','安徽','河北','河南','湖北','湖南','陕西','山西','黑龙江','辽宁','吉林','云南','贵州','甘肃省','内蒙古','宁夏','西藏','新疆','青海省']
+    data_folder = '../data/51jobs_{}/'.format(year_month)
+    back_folder = '../data/51jobs_{}_b/'.format(year_month)
+    zhinengleibies=['高级软件工程师', '软件工程师','算法工程师','系统架构设计师','互联网软件开发工程师','手机应用开发工程师','网站架构设计师']
+    for zhinengleibie in zhinengleibies:
+        category_back_folder=path.join(back_folder, zhinengleibie)
+        if not path.isdir(category_back_folder):
+            os.mkdir(category_back_folder)
+        for province in provinces:
+            city_back_folder=path.join(category_back_folder, province)
+            if not path.isdir(city_back_folder):
+                os.mkdir(city_back_folder)
+
+            city2db(data_folder, zhinengleibie, province)
+            #t=threading.Thread(target=city2db, args=(path.join(data_folder,job_category, city), city)) 
+            #t.start()
+
+
+def main2():
     city_names=['beijing','shanghai','guangzhou','shenzhen','hangzhou','nanjing', \
                 'wuhan','chongqing','chengdu','changsha','fuzhou','hefei','ningbo',\
                 'zhengzhou','tianjin','qingdao','jinan','kunming','shenyang','xian',\
@@ -730,6 +782,9 @@ def main():
             city2db(path.join(data_folder,job_category, city), city)
             #t=threading.Thread(target=city2db, args=(path.join(data_folder,job_category, city), city)) 
             #t.start()
+
                 
 if __name__=='__main__':
+    #global year_month
+    year_month='201904'
     main()
