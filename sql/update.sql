@@ -1,16 +1,16 @@
 --update _51jobs set career_software_engineer=0 where career_algorithm=1 or career_architect=1
---¸ÄÎªÒÔÍòÔªÎªµ¥Î»
+--æ”¹ä¸ºä»¥ä¸‡å…ƒä¸ºå•ä½
 --update _51jobs set monthly_salary=monthly_salary/10000
 
 
---RÓïÑÔÍ³¼Æ RÓïÑÔ "R Studio" R±à³Ì '%£¬R£¬%''%,R,%'
---update _51jobs set pl_r=1 where job_description like '%¡¢R¡¢%' 
---or job_description like '%£¬R£¬%' 
+--Rè¯­è¨€ç»Ÿè®¡ Rè¯­è¨€ "R Studio" Rç¼–ç¨‹ '%ï¼ŒRï¼Œ%''%,R,%'
+--update _51jobs set pl_r=1 where job_description like '%ã€Rã€%' 
+--or job_description like '%ï¼ŒRï¼Œ%' 
 --or job_description like '%,R,%'
---or  job_description like '%RÓïÑÔ%' 
+--or  job_description like '%Rè¯­è¨€%' 
 --or  job_description like '%R Studio%' 
---or  job_description like '%R±à³Ì%' 
---or  job_description like '%RÓïÑÔ%' 
+--or  job_description like '%Rç¼–ç¨‹%' 
+--or  job_description like '%Rè¯­è¨€%' 
 --vb.net
 --update _51jobs set pl_visual_basic_net=1  where job_description like '%vb.net%' 
 --or job_description like '%visual basic.net%' 
@@ -23,14 +23,14 @@
 --
 --update _51jobs set pl_scala=1  where job_description like '%scala%'
 --(1639 rows affected)
---Assembly language »ã±à
---update _51jobs set pl_assembly=1  where job_description like '%Assembly language%' or  job_description like '%»ã±à%' 
+--Assembly language æ±‡ç¼–
+--update _51jobs set pl_assembly=1  where job_description like '%Assembly language%' or  job_description like '%æ±‡ç¼–%' 
 --(1147 rows affected)
 --Linux Linux CentOS Ubuntu  redhat
 
---select * from _201904 where title like '%ÅÀ³æ%'
+--select * from _201904 where title like '%çˆ¬è™«%'
 --ALTER TABLE _201904 ADD career_spider bit DEFAULT 0 NOT NULL;
---update _201904 set career_spider=1  where title like '%ÅÀ³æ%'
+--update _201904 set career_spider=1  where title like '%çˆ¬è™«%'
 --update _201904 set career_software_engineer=0  where career_spider=1
 
 --update _201904 set city='beijing' where city_beijing=1

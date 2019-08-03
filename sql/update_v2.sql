@@ -1,7 +1,7 @@
---update _201904v2 set career = 'ÏµÍ³¼Ü¹¹Ê¦' where career='¼Ü¹¹Éè¼ÆÊ¦'
+--update _201904v2 set career = 'ç³»ç»Ÿæ¶æ„å¸ˆ' where career='æ¶æ„è®¾è®¡å¸ˆ'
 
-select * from _201904v2 where career like '%ÅÀ³æ%'
+select * from _201904v2 where career like '%çˆ¬è™«%'
 
 
-update _201904v2 set career='ÅÀ³æ¹¤³ÌÊ¦'  where title like '%ÅÀ³æ%'
-update _201904v2 set career='ÉúÎïĞÅÏ¢¹¤³ÌÊ¦'  where title like '%ÉúÎïĞÅÏ¢%'
+update _201905 set career='çˆ¬è™«å·¥ç¨‹å¸ˆ'  where title like '%çˆ¬è™«%'
+update _201905 set career='ç”Ÿç‰©ä¿¡æ¯å·¥ç¨‹å¸ˆ'  where title like '%ç”Ÿç‰©ä¿¡æ¯%'

@@ -18,31 +18,30 @@ import pandas as pd
 from db import get_conn
 import threading
 
-def nothing():
-    print("hi")
-    print("hi")
-
-    return 0
-
-
-
-year_month='201904'
 
 class Job():
     #basic info
     job_id=""
     title=""
-    page_title=''
-    
-    job_summary=''
-    
-    #经验 no 1_3 3_5 5_10 10+
-    experience=''
+    #无经验
+    experience_no=False
+    #1-3年
+    experience_1_3=False
+    #3-5年
+    experience_3_5=False
+    #5-10年
+    experience_5_10=False
+    #10年以上
+    experience_10=False
 
-    #学历， 初中以下，高中，专科，本科，硕士，博士
-    edu=''
     
-    headcount=0
+    #学历， one hot
+    edu_middle_school=False
+    edu_high_school=False
+    edu_associate=False
+    edu_bachelor=False
+    edu_master=False
+    edu_phd=False
     
     publish_date=datetime.today()
     #如果招聘信息本身都是周末发布的，这个公司应该是周末上班的。既996
@@ -50,10 +49,15 @@ class Job():
     
     monthly_salary=0
     
-    #职能类别 软件工程师 算法工程师 系统架构设计师
-    zhinengleibie=''
-    career=''
+    #职能类别 one-hot-encoding
+    #软件工程师
+    career_software_engineer=False
 
+    #算法工程师
+    career_algorithm=False
+
+    #系统架构设计师
+    career_architect=False
 
     
     #手机开发
@@ -63,7 +67,6 @@ class Job():
     
     #tags
     #五险一金
-    job_tags=''
     tag_five_insurance=False
     #股票期权
     tag_stock=False
@@ -111,7 +114,6 @@ class Job():
     pl_julia=False
     pl_haskell=False
     pl_delphi=False
-
     
     #database
     db_Oracle=False
@@ -149,14 +151,31 @@ class Job():
     #['beijing','shanghai','guangzhou','shenzhen','hangzhou','nanjing','wuhan',
     #'chongqing','chengdu','changsha','fuzhou','hefei','ningbo','zhengzhou',
     #'tianjin','qingdao','jinan','kuming','shenyang','xian','dongguan','dalian','harbin','changchun']
-    expert_expert=False
-    expert_blockchain=False
-    expert_adas=False
-    expert_embed=False
-    expert_gis=False
-    
-    province=''
-    city=''
+    city_beijing=False
+    city_beijing=False
+    city_shanghai=False
+    city_guangzhou=False
+    city_shenzhen=False
+    city_hangzhou=False
+    city_nanjing=False
+    city_wuhan=False
+    city_chongqing=False
+    city_chengdu=False
+    city_changsha=False
+    city_fuzhou=False
+    city_hefei=False
+    city_ningbo=False
+    city_zhengzhou=False
+    city_tianjin=False
+    city_qingdao=False
+    city_jinan=False
+    city_kuming=False
+    city_shenyang=False
+    city_xian=False
+    city_dongguan=False
+    city_dalian=False
+    city_harbin=False
+    city_changchun=False
     #languages
     english=False
     japanese=False
@@ -165,46 +184,68 @@ class Job():
     
     company_description=""
     #外资(欧美)
+    company_type_us_eu=False
     #外资(非欧美)
+    company_type_foreign=False
     #合资
+    company_tpye_jv=False
     #国企
+    company_type_state=False
     #民营公司
+    company_type_private=False
     #外企代表处
+    company_type_foreign_rep=False
     #政府机关
+    company_type_foreign_gov=False
     #事业单位
+    company_type_public_institution=False
     #非营利组织
+    company_type_non_profit=False
     #上市公司
+    company_type_listed=False
     #创业公司
-    company_type=''
-
-
+    company_type_startup=False
 
     #少于50人
+    company_size_50=False
     #50-150人
+    company_size_50_150=False
     #150-500人
+    company_size_150_500=False
     #500-1000人
+    company_size_500_1000=False
     #1000-5000人
+    company_size_1000_5000=False
     #5000-10000人
+    company_size_5000_10000=False
     #10000人以上
-    company_size=''
-
+    company_size_10000=False
+    
     #计算机/互联网/通信/电子
+    industry_computer=False
     #会计/金融/银行/保险
+    industry_finance=False
     #贸易/消费/制造/营运
+    industry_trade=False
     #制药/医疗
+    industry_medical=False
     #广告/媒体
+    industry_ads=False
     #房地产/建筑
+    industry_realestate=False
     #专业服务/教育/培训
+    industry_edu=False
     #服务业
+    industry_service=False
     #物流/运输
+    industry_logistic=False
     #能源/原材料
+    industry_energy=False
     #政府/非营利组织/其他
-    industry=''
+    industry_gov=False
     
-
-    
-    _996_no=False
-    _996_yes=False
+    non_996=False
+    icu_996=False
     
     def get_tags(self, tags):
         self.tag_five_insurance=('五险一金' in tags)
@@ -215,7 +256,6 @@ class Job():
         self.tag_rest_two_days=('做五休二' in tags or '周末双休' in tags or '朝九晚五' in tags)
         self.tag_stock=('股票期权' in tags)
         return self
-
     
     def get_salary(self, salary_string):
         #零时工，不统计
@@ -244,78 +284,106 @@ class Job():
         return self
     
     def check_edu(self):
-        return not self.edu==''
+        return self.edu_middle_school or \
+        self.edu_high_school or \
+        self.edu_associate or \
+        self.edu_bachelor or \
+        self.edu_master or \
+        self.edu_phd
 
     def get_edu(self, tag):
-        if (tag in ['初中及以下','高中','大专','本科','硕士','博士']):
-            self.edu=tag
+        self.edu_middle_school=(tag=='初中及以下')
+        self.edu_high_school=(tag=='高中')
+        self.edu_associate=(tag=='大专')
+        self.edu_bachelor=(tag=='本科')
+        self.edu_master=(tag=='硕士')
+        self.edu_phd=(tag=='博士')
         return self
         
     def check_working_experience(self):
-        return not self.experience==''
+        return self.experience_no or \
+        self.experience_1_3 or \
+        self.experience_3_5 or \
+        self.experience_5_10 or \
+        self.experience_10
         
     def get_working_experience(self, tag):
-        if (tag=='无工作经验'):
-            self.experience='no'
-            return self
-        if (tag=='10年以上经验'):
-            self.experience='10+'
-            return self
+        self.experience_no=(tag=='无工作经验')
+        self.experience_1_3=(tag=='1-3年经验')
+        self.experience_3_5=(tag=='3-5年经验')
+        self.experience_5_10=(tag=='5-10年经验')
+        self.experience_10=(tag=='10年以上经验')
         if not self.check_working_experience():
             re_result = re.match(r'(\d+)-(\d+)年经验',tag)
             if re_result:
-                we=(float(re_result.group(1))+float(re_result.group(2)))/2.0
+                we=float(re_result.group(1))+float(re_result.group(2))
+                we=we/2.0
                 if we<3:
-                    self.experience='1_3'
+                    self.experience_1_3=True
                 elif we<5:
-                    self.experience='3_5'
+                    self.experience_3_5=True
                 elif we<10:
-                    self.experience='5_10'
+                    self.experience_5_10=True
                 else:
-                    self.experience='10+'
-                
-                return self
-
+                    self.experience_10=True
             re_result = re.match(r'(\d+)年经验',tag)
             if re_result:
                 we=float(re_result.group(1))
                 if we<3:
-                    self.experience='1_3'
+                    self.experience_1_3=True
                 elif we<5:
-                    self.experience='3_5'
+                    self.experience_3_5=True
                 elif we<10:
-                    self.experience='5_10'
+                    self.experience_5_10=True
                 else:
-                    self.experience='10+'
+                    self.experience_10=True
         return self
 
     def check_company_size(self):
-        return not self.company_size==''
+        return (self.company_size_50 or \
+        self.company_size_50_150 or \
+        self.company_size_150_500 or \
+        self.company_size_500_1000 or \
+        self.company_size_1000_5000 or \
+        self.company_size_5000_10000 or \
+        self.company_size_10000)
         
     def get_company_size(self, tag):
-        if (tag=='少于50人'):
-            self.company_size='50-'
-        elif (tag=='50-150人'):
-            self.company_size='50-150'
-        elif (tag=='150-500人'):
-            self.company_size='150-500'
-        elif (tag=='500-1000人'):
-            self.company_size='500-1000'
-        elif (tag=='1000-5000人'):
-            self.company_size='1000-5000'
-        elif (tag=='5000-10000人'):
-            self.company_size='5000-10000'
-        elif (tag=='10000人以上'):
-            self.company_size='10000+'
+        self.company_size_50=(tag=='少于50人')
+        self.company_size_50_150=(tag=='50-150人')
+        self.company_size_150_500=(tag=='150-500人')
+        self.company_size_500_1000=(tag=='500-1000人')
+        self.company_size_1000_5000=(tag=='1000-5000人')
+        self.company_size_5000_10000=(tag=='5000-10000人')
+        self.company_size_10000=(tag=='10000人以上')
         return self
         
-    def get_company_type(self, tag):
-        if tag in ['外资（欧美）','外资（非欧美）','合资','国企','民营公司','外企代表处','政府机关','事业单位','非营利组织','上市公司''创业公司']:
-            self.company_type=tag
-        return self
-
     def check_company_type(self):
-        return not self.company_type==''
+        return self.company_type_us_eu or \
+        self.company_type_foreign or \
+        self.company_tpye_jv or \
+        self.company_type_state or \
+        self.company_type_private or \
+        self.company_type_foreign_rep or \
+        self.company_type_foreign_gov or \
+        self.company_type_public_institution or \
+        self.company_type_non_profit or \
+        self.company_type_listed or \
+        self.company_type_startup
+        
+    def get_company_type(self, tag):
+        self.company_type_us_eu=(tag=='外资（欧美）')
+        self.company_type_foreign=(tag=='外资（非欧美）')
+        self.company_tpye_jv=(tag=='合资')
+        self.company_type_state=(tag=='国企')
+        self.company_type_private=(tag=='民营公司')
+        self.company_type_foreign_rep=(tag=='外企代表处')
+        self.company_type_foreign_gov=(tag=='政府机关')
+        self.company_type_public_institution=(tag=='事业单位')
+        self.company_type_non_profit=(tag=='非营利组织')
+        self.company_type_listed=(tag=='上市公司')
+        self.company_type_startup=(tag=='创业公司')
+        return self
         
     def get_programming_languages(self, job_description_lower):
         self.pl_python='python' in job_description_lower
@@ -382,59 +450,63 @@ class Job():
         return self
 
     def check_industry(self):
-        return not self.industry==''
+        return (self.industry_computer or self.industry_finance or self.industry_trade or self.industry_medical \
+        or self.industry_ads or self.industry_realestate or self.industry_edu or self.industry_service \
+        or self.industry_logistic or self.industry_energy or self.industry_gov)
 
     def get_industry(self, industry_tag):
         if industry_tag in ['计算机软件','计算机硬件','计算机服务(系统、数据服务、维修)','通信/电信/网络设备','通信/电信运营、增值服务','互联网/电子商务','网络游戏','电子技术/半导体/集成电路','仪器仪表/工业自动化']:
-            self.industry='computer'
+            self.industry_computer=True
         #会计/金融/银行/保险
         if industry_tag in ['会计/审计','金融/投资/证券','银行','保险','信托/担保/拍卖/典当']:
-            self.industry='finance'
+            self.industry_finance=True
         #贸易/消费/制造/营运
         if industry_tag in ['贸易/进出口','批发/零售','快速消费品(食品、饮料、化妆品)','服装/纺织/皮革','家具/家电/玩具/礼品','奢侈品/收藏品/工艺品/珠宝','办公用品及设备','机械/设备/重工','汽车及零配件']:
-            self.industry='trade'
+            self.industry_trade=True
         #制药/医疗
         if industry_tag in ['制药/生物工程','医疗/护理/卫生','医疗设备/器械']:
-            self.industry='medical'
+            self.industry_medical=True
         #广告/媒体
         if industry_tag in ['广告','公关/市场推广/会展','影视/媒体/艺术/文化传播','文字媒体/出版','印刷/包装/造纸']:
-            self.industry='ads'
+            self.industry_ads=True
         #房地产/建筑
         if industry_tag in ['房地产','建筑/建材/工程','家居/室内设计/装潢','物业管理/商业中心']:
-            self.industry='realestate'
+            self.industry_realestate=True
         #专业服务/教育/培训
         if industry_tag in ['中介服务','专业服务(咨询、人力资源、财会)','外包服务','检测，认证','法律','教育/培训/院校','学术/科研','租赁服务']:
-            self.industry='edu'
+            self.industry_edu=True
         #服务业
         if industry_tag in ['餐饮业','酒店/旅游','娱乐/休闲/体育','美容/保健','生活服务']:
-            self.industry='service'
+            self.industry_service=True
         #物流/运输
         if industry_tag in ['交通/运输/物流','航天/航空']:
-            self.industry='logistic'
+            self.industry_logistic=True
         #能源/原材料
         if industry_tag in ['石油/化工/矿产/地质','采掘业/冶炼','电气/电力/水利','新能源','原材料和加工']:
-            self.industry='energy'
+            self.industry_energy=True
         #政府/非营利组织/其他
         if industry_tag in ['政府/公共事业','非营利组织','环保','农/林/牧/渔','多元化业务集团公司']:
-            self.industry='gov'
+            self.industry_gov=True
         return self
             
     def check_all(self, raise_exception=False):
 #        if not self.check_company_size():
 #            raise Exception("check_company_size")
         if raise_exception:
-            if self.company_type=='':
+            if not self.check_company_type():
                 raise Exception("check_company_type")
-            if self.industry=='':
+            if not self.check_industry():
                 raise Exception("check_industry")
-            if self.experience=='':
+            if not self.check_working_experience():
                 raise Exception("check_working_experience")
-
+        return self.check_company_type() and self.check_industry() \
+            and self.check_working_experience() and self.check_edu() \
+            and self.check_company_size()
 
 def in_996_list(company_title):
     return any(icu996 in company_title for icu996 in icu996companies)
 
-def in__996_no_list(company_title):
+def in_non_996_list(company_title):
     return any(non996 in company_title for non996 in non996companies)
 
 def printObject(o):
@@ -444,61 +516,35 @@ def get_company_tags(company_link):
     response=get(company_link)
     response.encoding='gbk'
     soup=BeautifulSoup(response.text, 'html.parser')
-    ltype_tag=soup.select_one('.ltype')
-    if not ltype_tag:
-        return []
-    info_string=ltype_tag.text
+    info_string=soup.select_one('.ltype').text
     return [info.strip() for info in info_string.split('|')]
 
-def file2job(file, zhinengleibie, province):
+def file2job(file, city):
     job=Job()
-    job.zhinengleibie=zhinengleibie
-    job.province=province
+    setattr(job,"city_"+city,True)
     job.job_id=path.split(file)[-1].replace(".html","")
-    
-    if job.job_id in ['110455749','77612262','107681687']:
-        return None
-    
-    #page title
-
-
     #print(file)
     content=""
-    try:
-        with open(file, mode='r',encoding='gbk') as f:
-            content=f.read()
-            f.close()
-    except UnicodeDecodeError:
-        print("UnicodeDecodeError")
-        return None
-
-    
+    with open(file, mode='r',encoding='gbk') as f:
+        content=f.read()
+        f.close()
+    os.rename(file, file.replace("51jobs","51jobs_back"))
     soup=BeautifulSoup(content, "html.parser")
-    job.page_title=soup.select_one('title').text
-    if '异地招聘' in job.page_title:
-        return None
+    
     #职业 start
     #首先判断职业，如果职业不是程序员，直接pass
     #career=soup.find('span',{'class':'label'},text='职能类别：').find_next('a').text.strip()
-    zhineng_tag=soup.find('span',{'class':'label'},text='职能类别：')
-    if not zhineng_tag:
-        return None
-    careers=[a_tag.text.strip() for a_tag in zhineng_tag.parent.find_all('a')]
+    careers=[a_tag.text.strip() for a_tag in soup.find('span',{'class':'label'},text='职能类别：').parent.find_all('a')]
     for career in careers:
         if (career in ['软件工程师','高级软件工程师','ERP技术开发','互联网软件开发工程师','多媒体/游戏开发工程师','手机应用开发工程师','WEB前端工程师','脚本开发工程师','语音/视频/图形开发工程师']):
-            job.career='一般程序员'
+            job.career_software_engineer=True
         if career=='算法工程师':
-            job.career='算法工程师'
+            job.career_algorithm=True
         if career in ['系统架构设计师','网站架构设计师']:
-            job.career='系统架构师'
+            job.career_architect=True
 
-    if '爬虫' in job.title:
-        job.career='爬虫工程师'
-
-    if '生物信息' in job.title:
-        job.career='生物信息工程师'
-
-    if job.career=='':
+    is_developer=job.career_software_engineer or job.career_algorithm or job.career_architect
+    if not is_developer:
         return None
     
     #职业 end
@@ -520,34 +566,11 @@ def file2job(file, zhinengleibie, province):
         
     
     job.title=soup.find("h1").text.strip()
-
-    if any(key in job.title for key in ['安全工程师','seo','测试','前端','信息工程师','运维','经理','嵌入式','讲师','老师','负责人','合伙人','计算机技术员','主任','总监','cto','需求工程师','需求分析','系统集成工程师','系统工程师','系统分析师','计算机辅助设计','DBA','实施','售前','售后','数据库']):
-        return None
-    
-    job_title_lower=job.title.lower()
-    if '专家' in job_title_lower:   
-        job.expert_expert=False
-    if 'blockchain' in job_title_lower or '区块链' in job_title_lower:
-        job.expert_blockchain=False
-    if 'adas' in job_title_lower:
-        job.expert_adas=False
-    if '嵌入式' in job_title_lower:
-        job.expert_embed=False
-    if 'gis' in job_title_lower:
-        job.expert_gis=False
-
-    if '架构师' in job_title_lower:
-        job.career='系统架构师'
-    if '算法工程师' in job_title_lower:
-        job.career='算法工程师'
-
-
     #'深圳-福田区|5-7年经验|本科|招1人|04-01发布'
-    job.job_summary=soup.select_one(".msg").text.replace('\xa0','').replace(' ','').strip()
+    basic_info=soup.select_one(".msg").text.replace('\xa0','').replace(' ','').strip()
     #print(basic_info)
-    infos=job.job_summary.split('|')
-    #first location
-    job.city=infos[0].split('-')[0]
+    infos=basic_info.split('|')
+    
     #remove the first one - location
     infos=infos[1:]
     for info in infos:
@@ -557,13 +580,7 @@ def file2job(file, zhinengleibie, province):
         #学历
         if not job.check_edu():
             job.get_edu(info)
-        
-        #人数
-        if '招' in info and '人' in info:
-            headcount_string=info.replace('招','').replace('人','')            
-            if headcount_string=='若干':
-                headcount_string='5'
-            job.headcount=int(headcount_string)
+
     
         if info.endswith('发布'):
     
@@ -573,6 +590,7 @@ def file2job(file, zhinengleibie, province):
             weekday=job.publish_date.weekday()
             job.published_on_weekend=weekday>4
 
+
         #language
         if '英语' in info or '英文' in info:
             job.english=True
@@ -581,7 +599,6 @@ def file2job(file, zhinengleibie, province):
         
     #tags
     tags=[tag.text for tag in soup.select('.sp4')]
-    job.job_tags=','.join(tags)
     job.get_tags(tags)
     
     h2_span=soup.select_one('h2 span')
@@ -594,8 +611,8 @@ def file2job(file, zhinengleibie, province):
     
 
     #继续判断是不是架构师
-    #if '架构师' in job_description_lower:
-    #    job.career='系统架构师'
+    if '架构师' in job_description_lower:
+        job.career_algorithm=True
     #继续判断是不是算法工程师
     if 'tensorflow' in job_description_lower \
         or 'keras' in job_description_lower \
@@ -608,7 +625,12 @@ def file2job(file, zhinengleibie, province):
         or 'sklearn' in job_description_lower \
         or '深度学习' in job_description_lower \
         or '图像识别' in job_description_lower:
-        job.career='算法工程师'        
+        job.career_algorithm=True
+        
+    
+    if job.career_algorithm or job.career_architect:
+        job.career_software_engineer=True
+        
 
     job.get_programming_languages(job_description_lower).get_databases(job_description_lower)
     
@@ -642,14 +664,14 @@ def file2job(file, zhinengleibie, province):
     
     
     job.get_company_type(company_tags[0])
-    if job.company_type=='':
+    if not job.check_company_type():
         company_link=soup.select_one('.com_name').attrs['href']
         company_tags=get_company_tags(company_link)
         for tag in company_tags:
             if job.get_company_type(tag).check_company_type():
                 break 
 
-    if job.company_type=='':
+    if not job.check_company_type():
         return None
     
     job.get_company_size(company_tags[1])
@@ -672,11 +694,11 @@ def file2job(file, zhinengleibie, province):
         job.get_industry(industry_tag)
     
     if job.company_title in ['系统集成有限责任公司','博彦科技股份有限公司']:
-        job.industry='computer'
+        job.industry_computer=True
     if job.company_title=='软件与服务中心':
-        job.industry='trade'
+        job.industry_trade=True
     if job.company_title== '中核集团技术经济总院':
-        job.industry='energy'
+           job.industry_energy=True
     
 #    if not job.check_industry():
 #        raise Exception("no industry")
@@ -687,90 +709,60 @@ def file2job(file, zhinengleibie, province):
         or '朝九晚六' in job.job_description \
         or '双休' in job.job_description \
         or '不加班' in job.job_description:
-        job._996_no=True
+        job.non_996=True
     if '朝九晚九' in job.job_description:
-        job._996_yes=True
+        job.icu_996=True
     if job.tag_rest_two_days:
-        job._996_no=True
+        job.non_996=True
     if in_996_list(job.company_title):
-        job._996_yes=True
-    if in__996_no_list(job.company_title):
-        job._996_no=True
+        job.icu_996=True
+    if in_non_996_list(job.company_title):
+        job.non_996=True
     if job.published_on_weekend:
-        job._996_yes=True
-    
-    if job.company_title in ['青岛云指针软件有限公司']:
-        job._996_no=False
-        job._996_yes=False
+        job.icu_996=True
     
     return job
 
-def try_rename(file):
-    #return
-    new_file=file.replace("51jobs_{}".format(year_month),"51jobs_{}_b".format(year_month))
-    if path.isfile(new_file):
-        os.remove(file)
-    else:
-        os.rename(file, new_file) 
-
-def file2db(file, zhinengleibie, province):
+def file2db(file, city):
     conn=get_conn()
-
+    try:
         
-    filename=path.split(file)[-1]
-    job_id=filename.replace(".html","")           
+        filename=path.split(file)[-1]
+        job_id=filename.replace(".html","")           
     
-    exists=conn.execute("select count(1) from _{} where job_id='{}'".format(year_month, job_id)).fetchall()[0][0]
-    if exists:
-        try_rename(file)
-        return
-    print(file)
-    job=file2job(file, zhinengleibie, province)
-    if not job:
-        try_rename(file)
-        return
+        exists=conn.execute("select count(1) from _51jobs where job_id='{0}'".format(job_id)).fetchall()[0][0]
+        if exists:
+            os.rename(file, file.replace("51jobs","51jobs_back"))
+            return
+        print(file)
+        job=file2job(file, city)
+        if not job:
+            return
+#        if not job.check_all():
+#            return
     
-    data=pd.DataFrame(columns=get_featurenames(job))
-    l=object2list(job)
-    data.loc[job.job_id]=l
-    data.to_sql("_"+year_month,conn,if_exists="append", index=False)
-
-    conn.close()
-    try_rename(file)   
-
-def city2db(data_folder,zhinengleibie, province):
-    city_folder=path.join(data_folder,zhinengleibie, province)
+        data=pd.DataFrame(columns=get_featurenames(job))
+        l=object2list(job)
+        data.loc[job.job_id]=l
+        data.to_sql("_51jobs",conn,if_exists="append", index=False)
+    except Exception:
+        pass
+    finally:
+        conn.close()
+    
+def city2db(city_folder, city):
     files = glob(path.join(city_folder,"*.html"))
     for file in files:
-        file2db(file, zhinengleibie, province) 
-
+        file2db(file, city) 
+    
 def main():
-    provinces=['北京','上海','广东','深圳','天津','重庆','江苏','浙江','四川','海南','福建','山东','江西','广西','安徽','河北','河南','湖北','湖南','陕西','山西','黑龙江','辽宁','吉林','云南','贵州','甘肃省','内蒙古','宁夏','西藏','新疆','青海省']
-    data_folder = '../data/51jobs_{}/'.format(year_month)
-    back_folder = '../data/51jobs_{}_b/'.format(year_month)
-    zhinengleibies=['高级软件工程师', '软件工程师','算法工程师','系统架构设计师','互联网软件开发工程师','手机应用开发工程师','网站架构设计师']
-    for zhinengleibie in zhinengleibies:
-        category_back_folder=path.join(back_folder, zhinengleibie)
-        if not path.isdir(category_back_folder):
-            os.mkdir(category_back_folder)
-        for province in provinces:
-            city_back_folder=path.join(category_back_folder, province)
-            if not path.isdir(city_back_folder):
-                os.mkdir(city_back_folder)
-
-            city2db(data_folder, zhinengleibie, province)
-            #t=threading.Thread(target=city2db, args=(path.join(data_folder,job_category, city), city)) 
-            #t.start()
-
-
-def main2():
     city_names=['beijing','shanghai','guangzhou','shenzhen','hangzhou','nanjing', \
                 'wuhan','chongqing','chengdu','changsha','fuzhou','hefei','ningbo',\
-                'zhengzhou','tianjin','qingdao','jinan','kunming','shenyang','xian',\
+                'zhengzhou','tianjin','qingdao','jinan','kuming','shenyang','xian',\
                 'dongguan','dalian','harbin','changchun']
     #city_names=['shanghai']
     data_folder = '../data/51jobs/'
-    back_folder = '../data/51jobs_b/'
+    back_folder = '../data/51jobs_back/'
     for job_category in ['0100','2500']:
         category_back_folder=path.join(back_folder, job_category)
         if not path.isdir(category_back_folder):
@@ -779,12 +771,9 @@ def main2():
             city_back_folder=path.join(category_back_folder, city)
             if not path.isdir(city_back_folder):
                 os.mkdir(city_back_folder)
-            city2db(path.join(data_folder,job_category, city), city)
-            #t=threading.Thread(target=city2db, args=(path.join(data_folder,job_category, city), city)) 
-            #t.start()
-
+            t=threading.Thread(target=city2db, args=(path.join(data_folder,job_category, city), city)) 
+            t.start()
                 
 if __name__=='__main__':
-    #global year_month
-    year_month='201904'
+    pass
     main()
