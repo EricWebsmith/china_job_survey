@@ -13,8 +13,13 @@ from urllib.request import urlretrieve
 from requests import get
 from bs4 import BeautifulSoup
 import threading
+from datetime import datetime
 
-data_folder = '../../data/51jobs_201907/'
+now = datetime.now()
+
+data_folder = f'../../data/51jobs_{now.strftime("%Y%m")}/'
+if not path.isdir(data_folder):
+    mkdir(data_folder)
 
 def main():
     #city_names=['beijing','shanghai','guangzhou','shenzhen','hangzhou','nanjing','wuhan','chongqing','chengdu','changsha','fuzhou','hefei','ningbo','zhengzhou','tianjin','qingdao','jinan','kuming','shenyang','xian','dongguan','dalian','harbin','changchun']
@@ -79,8 +84,8 @@ def main():
             
     #0100是软件，2500是互联网
     categories={}
-#    categories['0106']='高级软件工程师'
-#    categories['0107']='软件工程师'
+    categories['0106']='高级软件工程师'
+    categories['0107']='软件工程师'
     categories['0109']='机器学习工程师'
     categories['0110']='深度学习工程师'
     categories['0111']='图像算法工程师'
@@ -89,11 +94,11 @@ def main():
     categories['0114']='图像识别工程师'
     categories['0115']='机器视觉工程师'
     categories['0116']='自然语言处理（NLP）'
-#    categories['0148']='算法工程师'
-#    categories['0143']='系统架构设计师'
-#    categories['2501']='互联网软件开发工程师'
-#    categories['2537']='手机应用开发工程师'
-#    categories['2512']='网站架构设计师'
+    categories['0148']='算法工程师'
+    categories['0143']='系统架构设计师'
+    categories['2501']='互联网软件开发工程师'
+    categories['2537']='手机应用开发工程师'
+    categories['2512']='网站架构设计师'
     #categories['']=''
     #categories['']=''
     for category_key, category_name in categories.items():
@@ -116,18 +121,28 @@ def main():
             re_result = re.match(r'共(\d+)页，到第',page_count_string)
             total_page = int(re_result.group(1))
             print("{0} has {1} pages".format(province_name, total_page))
-            links = [tag.attrs['href'] for tag in soup.select(".t1 a") if tag.attrs['href'].startswith("https://jobs.51job.com/")]
-            download_pages(links, province_folder)
+            
 
-            for page_index in range(2,total_page):
+
+
+            for page_index in range(1,total_page):
                 #'https://sou.zhaopin.com/?jl=530&sf=0&st=0&jt=23,160000,045'
                 list_url = 'https://search.51job.com/list/{0},000000,{1},00,9,99,%2B,2,{2}.html?lang=c&stype=1&postchannel=0000&workyear=99&cotype=99&degreefrom=99&jobterm=99&companysize=99&lonlat=0%2C0&radius=-1&ord_field=0&confirmdate=9&fromType=&dibiaoid=0&address=&line=&specialarea=00&from=&welfare='.format(province_code, category_key, page_index)
                 list_page = get(list_url)
                 list_page.encoding = 'gb2312'
                 soup = BeautifulSoup(list_page.text,"html.parser")
                 #get list page
-                els_tags = soup.select('.el')
-
+                links=[]
+                el_tags = soup.select_one('.dw_table').select('.el')
+                for el_tag in el_tags:
+                    date_string = el_tag.select_one('.t5').text
+                    if date_string[:2]=='发布':
+                        continue
+                    month=int(date_string[:2])
+                    if month==now.month:
+                        link=el_tag.find('a').attrs['href']
+                        links.append(link)
+                
                 links = [tag.attrs['href'] for tag in soup.select(".t1 a")]
                 download_pages(links, province_folder)
 
