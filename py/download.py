@@ -13,13 +13,10 @@ from urllib.request import urlretrieve
 from requests import get
 from bs4 import BeautifulSoup
 import threading
-from datetime import datetime
 
-now = datetime.now()
 
-data_folder = f'../../data/51jobs_{now.strftime("%Y%m")}/'
-if not path.isdir(data_folder):
-    mkdir(data_folder)
+data_folder = f'../../data/51jobs_201908/'
+
 
 def main():
     #city_names=['beijing','shanghai','guangzhou','shenzhen','hangzhou','nanjing','wuhan','chongqing','chengdu','changsha','fuzhou','hefei','ningbo','zhengzhou','tianjin','qingdao','jinan','kuming','shenyang','xian','dongguan','dalian','harbin','changchun']
@@ -132,17 +129,6 @@ def main():
                 list_page.encoding = 'gb2312'
                 soup = BeautifulSoup(list_page.text,"html.parser")
                 #get list page
-                links=[]
-                el_tags = soup.select_one('.dw_table').select('.el')
-                for el_tag in el_tags:
-                    date_string = el_tag.select_one('.t5').text
-                    if date_string[:2]=='发布':
-                        continue
-                    month=int(date_string[:2])
-                    if month==now.month:
-                        link=el_tag.find('a').attrs['href']
-                        links.append(link)
-                
                 links = [tag.attrs['href'] for tag in soup.select(".t1 a")]
                 download_pages(links, province_folder)
 
