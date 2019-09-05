@@ -15,7 +15,7 @@ from bs4 import BeautifulSoup
 import threading
 
 
-data_folder = f'../../data/51jobs_201908/'
+data_folder = f'../../data/51jobs_201909/'
 
 
 def main():

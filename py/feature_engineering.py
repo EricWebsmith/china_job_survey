@@ -26,7 +26,7 @@ def nothing():
 
 
 
-year_month='201907'
+year_month='201909'
 
 class Job():
     #basic info
