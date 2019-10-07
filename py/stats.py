@@ -5,13 +5,7 @@ Created on Sat Oct  5 23:49:42 2019
 @author: eric
 """
 import db
-
-
-year=2019
-month=10
-
-
-
+from config import year, month
 
 conn=db.get_conn()
 

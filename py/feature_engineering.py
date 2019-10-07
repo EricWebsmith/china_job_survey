@@ -16,17 +16,9 @@ from common import is_article_english,object2list, get_featurenames
 from icu996companies import icu996companies, non996companies
 import pandas as pd
 from db import get_conn
-import threading
 
-def nothing():
-    print("hi")
-    print("hi")
-
-    return 0
-
-
-
-year_month='201910'
+from config import year, month
+year_month=f'{year}{month:02}'
 
 class Job():
     #basic info

@@ -13,9 +13,10 @@ from urllib.request import urlretrieve
 from requests import get
 from bs4 import BeautifulSoup
 import threading
+from config import year, month
 
 
-data_folder = f'../../data/51jobs_201910/'
+data_folder = f'../../data/51jobs_{year}{month:02}/'
 
 
 def main():
