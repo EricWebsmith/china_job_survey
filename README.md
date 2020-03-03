@@ -20,3 +20,7 @@ This repo is to look into Chinese Job website and make stats.
 
 ![](https://github.com/juwikuang/job_survey/blob/master/images/2019_04_pl_word_cloud.png?raw=true)
 
+For users from China, please use this link to render the reports:
+
+[https://nbviewer.jupyter.org/](https://nbviewer.jupyter.org/)
+
