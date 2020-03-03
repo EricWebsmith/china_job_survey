@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup
 from glob import glob
 import inspect
 from common import is_article_english,object2list, get_featurenames
-from icu996companies import icu996companies, non996companies
+#from icu996companies import icu996companies, non996companies
 import pandas as pd
 from db import get_conn
 
@@ -93,11 +93,12 @@ class Job():
     pl_typescript=False
     pl_ruby=False
     pl_vba=False
-    pl_scrala=False
+    pl_scala=False
     pl_kotlin=False
     pl_visual_basic=False
     pl_go=False
     pl_perl=False
+    pl_r=False
     pl_rust=False
     pl_lua=False
     pl_julia=False
@@ -137,6 +138,78 @@ class Job():
     db_CouchDB=False
     db_Riak=False
     db_dBase=False
+    
+    ml_keras=False
+    ml_tensorflow=False
+    ml_pytorch=False
+    ml_caffe=False
+    ml_mxnet=False
+    
+    ml_sklearn=False
+    ml_mllib=False
+    ml_tensorlayer=False
+    ml_paddlepaddle=False
+    ml_cntk=False
+    ml_theano=False
+    ml_mahout=False
+    def get_machine_learning_stats(self, job_description_lower):
+        self.ml_keras='keras' in job_description_lower
+        self.ml_tensorflow='tensorflow' in job_description_lower
+        self.ml_pytorch='pytorch' in job_description_lower
+        self.ml_caffe='caffe' in job_description_lower
+        self.ml_mxnet='mxnet' in job_description_lower
+        
+        self.ml_sklearn='sklearn' in job_description_lower
+        if 'scikit' in job_description_lower:
+            self.ml_sklearn=True
+        self.ml_mllib='mllib' in job_description_lower
+        self.ml_tensorlayer='tensorlayer' in job_description_lower
+        self.ml_paddlepaddle='paddlepaddle' in job_description_lower
+        self.ml_cntk='cntk' in job_description_lower
+        self.ml_theano='theano' in job_description_lower
+        self.ml_mahout='mahout' in job_description_lower    
+        return self
+    
+
+    bd_hadoop=False
+    bd_spark=False
+    bd_hive=False
+    bd_mapReduce=False
+
+    bd_kafka=False
+    bd_hbase=False
+    bd_storm=False
+
+    bd_pig=False
+    bd_mahout=False
+    bd_impala=False
+    bd_yarn=False
+    bd_alluxio=False
+    bd_flink=False
+    bd_presto=False
+    bd_heron=False
+    
+    def get_big_data_stats(self, job_description_lower):
+        self.bd_hadoop='hadoop' in job_description_lower
+        if 'hdfs' in job_description_lower:
+            self.bd_hadoop=True
+        self.bd_spark='spark' in job_description_lower
+        self.bd_hive='hive' in job_description_lower
+        self.bd_mapReduce='mapReduce' in job_description_lower
+        self.bd_kafka='kafka' in job_description_lower
+        self.bd_hbase='hbase' in job_description_lower
+        self.bd_storm='storm' in job_description_lower
+        self.bd_pig='pig' in job_description_lower
+        self.bd_mahout='mahout' in job_description_lower
+        self.bd_impala='impala' in job_description_lower
+        self.bd_yarn='yarn' in job_description_lower
+        self.bd_alluxio='alluxio' in job_description_lower
+        self.bd_flink='flink' in job_description_lower
+        self.bd_presto='presto' in job_description_lower
+        self.bd_heron='heron' in job_description_lower
+        return self
+    
+
     #city
     #['beijing','shanghai','guangzhou','shenzhen','hangzhou','nanjing','wuhan',
     #'chongqing','chengdu','changsha','fuzhou','hefei','ningbo','zhengzhou',
@@ -315,15 +388,14 @@ class Job():
         self.pl_javascript='javascript' in job_description_lower
         self.pl_c_sharp='c#' in job_description_lower or '.net' in job_description_lower
         self.pl_php='php' in job_description_lower
-        #c++
-        self.pl_cpp='c++' in job_description_lower
+
         self.pl_objective_c='objective c' in job_description_lower
         self.pl_swift='swift' in job_description_lower
         self.pl_matlab='matlab' in job_description_lower
         self.pl_typescript='typescript' in job_description_lower
         self.pl_ruby='ruby' in job_description_lower
         self.pl_vba='vba' in job_description_lower
-        self.pl_scrala='scrala' in job_description_lower
+        self.pl_scala='scala' in job_description_lower
         self.pl_kotlin='kotlin' in job_description_lower
         self.pl_visual_basic='visual basic' in job_description_lower
         self.pl_go='go' in job_description_lower
@@ -333,6 +405,20 @@ class Job():
         self.pl_julia='julia' in job_description_lower
         self.pl_haskell='haskell' in job_description_lower
         self.pl_delphi='delphi' in job_description_lower
+        
+        #c++
+        self.pl_cpp='c++' in job_description_lower
+        if 'c语言'  in job_description_lower:
+            self.pl_cpp=True
+        if re.search(r'[^a-z]c[^a-z]',job_description_lower):
+            self.pl_cpp=True
+            
+        #r语言
+        if 'r语言' in job_description_lower:
+            self.pl_r=True
+        if re.search(r'[^a-z]r[^a-z]',job_description_lower):
+            self.pl_r=True
+            
         return self
 
     
@@ -423,12 +509,6 @@ class Job():
                 raise Exception("check_working_experience")
 
 
-def in_996_list(company_title):
-    return any(icu996 in company_title for icu996 in icu996companies)
-
-def in__996_no_list(company_title):
-    return any(non996 in company_title for non996 in non996companies)
-
 def printObject(o):
     print(inspect.getmembers(o))
 
@@ -471,7 +551,10 @@ def file2job(file, zhinengleibie, province):
 
     
     soup=BeautifulSoup(content, "html.parser")
-    job.page_title=soup.select_one('title').text
+    title_tag=soup.select_one('title')
+    if not title_tag:
+        return None
+    job.page_title=title_tag.text
     if '异地招聘' in job.page_title:
         return None
     #职业 start
@@ -489,8 +572,6 @@ def file2job(file, zhinengleibie, province):
         if career in ['系统架构设计师','网站架构设计师']:
             job.career='系统架构师'
 
-
-    
     #职业 end
     
     #20-40万/年
@@ -525,21 +606,27 @@ def file2job(file, zhinengleibie, province):
     
     job_title_lower=job.title.lower()
     if '专家' in job_title_lower:   
-        job.expert_expert=False
+        job.expert_expert=True
     if 'blockchain' in job_title_lower or '区块链' in job_title_lower:
-        job.expert_blockchain=False
+        job.expert_blockchain=True
     if 'adas' in job_title_lower:
-        job.expert_adas=False
+        job.expert_adas=True
     if '嵌入式' in job_title_lower:
-        job.expert_embed=False
+        job.expert_embed=True
     if 'gis' in job_title_lower:
-        job.expert_gis=False
+        job.expert_gis=True
 
     if '架构师' in job_title_lower:
         job.career='系统架构师'
+        
     if '算法工程师' in job_title_lower:
         job.career='算法工程师'
 
+    if '数据分析' in job_title_lower:
+        job.career='数据分析'
+
+    if '图像算法' in job_title_lower:
+        job.career='图像算法'
 
     #'深圳-福田区|5-7年经验|本科|招1人|04-01发布'
     job.job_summary=soup.select_one(".msg").text.replace('\xa0','').replace(' ','').strip()
@@ -567,7 +654,7 @@ def file2job(file, zhinengleibie, province):
         if info.endswith('发布'):
     
             #date
-            date_string="2019-"+info.replace("发布",'')
+            date_string="2020-"+info.replace("发布",'')
             job.publish_date=datetime.strptime(date_string, '%Y-%m-%d')
             weekday=job.publish_date.weekday()
             job.published_on_weekend=weekday>4
@@ -590,26 +677,61 @@ def file2job(file, zhinengleibie, province):
     
     #年龄歧视
     job.ageism='岁' in job.job_description
-    
+             
+            
+    if '机器学习' in job.title or '深度学习' in job.title or '推荐系统' in job.title \
+         or '推荐算法' in job.title or '图像识别' in job.title or '人工智能' in job.title \
+         or 'nlp' in job.title.lower() or '自然语言' in job.title or 'aml' in job.title \
+         or 'AI' in job.title or '数据科学家' in job.title or 'data scientist' in job.title.lower() \
+         or '知识图谱' in job.title \
+         or job.zhinengleibie in ('机器学习工程师','深度学习工程师'):
+             job.career='机器学习' 
+             
+               
+           
+        
+    if 'dsp' in job_description_lower:
+        job.career='DSP' 
+        
+    if 'slam' in job_description_lower:
+        job.career='SLAM' 
+        
+    if 'CT重建' in job.title:
+        job.career='CT重建' 
 
-    #继续判断是不是架构师
-    #if '架构师' in job_description_lower:
-    #    job.career='系统架构师'
-    #继续判断是不是算法工程师
-    if 'tensorflow' in job_description_lower \
-        or 'keras' in job_description_lower \
-        or 'caffe' in job_description_lower \
-        or 'pytorch' in job_description_lower \
-        or '机器学习' in job_description_lower \
-        or 'nlp' in job_description_lower \
-        or '自然语言处理' in job_description_lower \
-        or '算法工程师' in job_description_lower \
-        or 'sklearn' in job_description_lower \
-        or '深度学习' in job_description_lower \
-        or '图像识别' in job_description_lower:
-        job.career='算法工程师'        
+    if '大数据' in job.title:
+        job.career='大数据'   
+        
+    if 'FPGA' in job.title:
+        job.career='FPGA'  
 
-    job.get_programming_languages(job_description_lower).get_databases(job_description_lower)
+    if '信号处理' in job.title:
+        job.career='信号处理' 
+        
+    if '架构师' in job.title:
+        job.career='系统架构师' 
+
+    if '视觉' in job.title:
+        job.career='视觉软件工程师'
+        
+    if '三维重建' in job.title:
+        job.career='视觉软件工程师'
+        
+    if '规划算法' in job.title:
+        job.career='规划算法工程师'
+
+    if '遥感' in job.title:
+        job.career='遥感'
+        
+    if '机器人' in job.title:
+        job.career='机器人'
+        
+        
+        
+    job.get_programming_languages(job_description_lower) \
+        .get_databases(job_description_lower) \
+        .get_big_data_stats(job_description_lower) \
+        .get_machine_learning_stats(job_description_lower) 
     
     #english and japanese
     if '英语' in job_description_lower or '英文' in job_description_lower:
@@ -634,15 +756,20 @@ def file2job(file, zhinengleibie, province):
 
     
     #<span class="bname">公司信息</span>
-    job.company_description=soup.find('span',text='公司信息').parent.find_next('div').text.replace('\xa0',' ').strip()
-    job.company_title=soup.select_one('.com_name').text.strip()
+    company_info_tag=soup.find('span',text='公司信息')
+    if company_info_tag:
+        job.company_description=company_info_tag.parent.find_next('div').text.replace('\xa0',' ').strip()
+    company_title_tag=soup.select_one('.com_name')
+    if not company_title_tag:
+        company_title_tag=soup.select_one('.catn')
+    job.company_title=company_title_tag.text.strip()
     #['民营公司', '150-500人', '服装/纺织/皮革']
     company_tags=[p.text.strip() for p in soup.select('.com_tag .at')]
     
-    
-    job.get_company_type(company_tags[0])
+    if len(company_tags)>0:
+        job.get_company_type(company_tags[0])
     if job.company_type=='':
-        company_link=soup.select_one('.com_name').attrs['href']
+        company_link=company_title_tag.attrs['href']
         company_tags=get_company_tags(company_link)
         for tag in company_tags:
             if job.get_company_type(tag).check_company_type():
@@ -653,7 +780,7 @@ def file2job(file, zhinengleibie, province):
     
     job.get_company_size(company_tags[1])
     if not job.check_company_size():
-        company_link=soup.select_one('.com_name').attrs['href']
+        company_link=company_title_tag.attrs['href']
         company_tags=get_company_tags(company_link)
         for tag in company_tags:
             if job.get_company_size(tag).check_company_size():
@@ -691,10 +818,6 @@ def file2job(file, zhinengleibie, province):
         job._996_yes=True
     if job.tag_rest_two_days:
         job._996_no=True
-    if in_996_list(job.company_title):
-        job._996_yes=True
-    if in__996_no_list(job.company_title):
-        job._996_no=True
     if job.published_on_weekend:
         job._996_yes=True
     
@@ -706,7 +829,7 @@ def file2job(file, zhinengleibie, province):
 
 def try_rename(file):
     #return
-    new_file=file.replace("51jobs_{}".format(year_month),"51jobs_{}_b".format(year_month))
+    new_file=file.replace(f"51jobs_{year_month}",f"51jobs_{year_month}_b")
     if path.isfile(new_file):
         os.remove(file)
     else:
@@ -761,10 +884,6 @@ def main():
             #t=threading.Thread(target=city2db, args=(path.join(data_folder,job_category, city), city)) 
             #t.start()
 
-
-
-
-                
 if __name__=='__main__':
     #global year_month
 

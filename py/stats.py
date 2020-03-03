@@ -4,6 +4,9 @@ Created on Sat Oct  5 23:49:42 2019
 
 @author: eric
 """
+import numpy as np
+import pandas as pd
+import weighted
 import db
 from config import year, month
 
@@ -32,5 +35,23 @@ for salary, city in result:
     sql_insert+=f" values('{year}{month:02}', '{city}', {salary});\n"
 
 conn.execute(sql_insert)
+
+#MonthlyStats
+def get_summary(data, career):
+    
+    salaries = data.monthly_salary.values
+    headcounts = data.headcount.values
+    head_count=np.sum(headcounts)
+    salary_average=int(np.average(salaries, weights=headcounts))
+    q = weighted.weighted_quantile(salaries,[0.025,0.5,0.975],headcounts)
+    print(f"2019年{month}月全国招收{career}{head_count}人。2019年{month}月全国{career}平均工资{salary_average:.0f}元，工资中位数{q[1]:.0f}元，其中95%的人的工资介于{q[0]:.0f}元到{q[2]:.0f}元。\r\n")
+    return head_count, salary_average, q[1]
+    
+data=pd.read_sql(sql=f"select * from _{year}{month:02} where monthly_salary>0 and monthly_salary<80000", con=conn)
+headcount, mean, median=get_summary(data, '程序员')
+conn.execute(f"delete from MonthlyStats where Month='{year}{month:02}'")
+sql="insert into MonthlyStats(Month, Salary_Mean, Salary_Median, JD_Count, HeadCount)"
+sql=sql+f" values('{year}{month:02}',{mean},{median},{data.shape[0]},{headcount})"
+conn.execute(sql)
 
 conn.close()
