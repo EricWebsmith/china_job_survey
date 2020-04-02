@@ -44,7 +44,7 @@ def get_summary(data, career):
     head_count=np.sum(headcounts)
     salary_average=int(np.average(salaries, weights=headcounts))
     q = weighted.weighted_quantile(salaries,[0.025,0.5,0.975],headcounts)
-    print(f"2019年{month}月全国招收{career}{head_count}人。2019年{month}月全国{career}平均工资{salary_average:.0f}元，工资中位数{q[1]:.0f}元，其中95%的人的工资介于{q[0]:.0f}元到{q[2]:.0f}元。\r\n")
+    print(f"{year}年{month}月全国招收{career}{head_count}人。{year}年{month}月全国{career}平均工资{salary_average:.0f}元，工资中位数{q[1]:.0f}元，其中95%的人的工资介于{q[0]:.0f}元到{q[2]:.0f}元。\r\n")
     return head_count, salary_average, q[1]
     
 data=pd.read_sql(sql=f"select * from _{year}{month:02} where monthly_salary>0 and monthly_salary<80000", con=conn)

@@ -60,8 +60,6 @@ def main():
 
     #make sure this folder is created
     
-    
-
     def download_pages(links, folder):
         for link in links:
             try:
@@ -126,14 +124,17 @@ def main():
             for page_index in range(1,total_page):
                 #'https://sou.zhaopin.com/?jl=530&sf=0&st=0&jt=23,160000,045'
                 list_url = 'https://search.51job.com/list/{0},000000,{1},00,9,99,%2B,2,{2}.html?lang=c&stype=1&postchannel=0000&workyear=99&cotype=99&degreefrom=99&jobterm=99&companysize=99&lonlat=0%2C0&radius=-1&ord_field=0&confirmdate=9&fromType=&dibiaoid=0&address=&line=&specialarea=00&from=&welfare='.format(province_code, category_key, page_index)
-                list_page = get(list_url)
-                list_page.encoding = 'gb2312'
-                soup = BeautifulSoup(list_page.text,"html.parser")
-                #get list page
-                links = [tag.attrs['href'] for tag in soup.select(".t1 a")]
-                download_pages(links, province_folder)
+                try:
+                    list_page = get(list_url)
+                    list_page.encoding = 'gb2312'
+                    soup = BeautifulSoup(list_page.text,"html.parser")
+                    #get list page
+                    links = [tag.attrs['href'] for tag in soup.select(".t1 a")]
+                    download_pages(links, province_folder)
+                except Exception as err:
+                    print(err)
+                    print(list_url)
 
-    
 if __name__ == '__main__':
     main()
 

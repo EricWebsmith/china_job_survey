@@ -17,7 +17,7 @@ from common import is_article_english,object2list, get_featurenames
 import pandas as pd
 from db import get_conn
 
-from config import year, month
+from config import year, month, company_blacklist, title_key_blacklist
 year_month=f'{year}{month:02}'
 
 class Job():
@@ -601,7 +601,7 @@ def file2job(file, zhinengleibie, province):
     if job.career=='':
         return None
 
-    if any(key in job.title for key in ['安全工程师','seo','测试','前端','信息工程师','运维','经理','嵌入式','讲师','老师','负责人','合伙人','计算机技术员','主任','总监','cto','需求工程师','需求分析','系统集成工程师','系统工程师','系统分析师','计算机辅助设计','DBA','实施','售前','售后','数据库']):
+    if any(key in job.title for key in title_key_blacklist):
         return None
     
     job_title_lower=job.title.lower()
@@ -722,11 +722,30 @@ def file2job(file, zhinengleibie, province):
 
     if '遥感' in job.title:
         job.career='遥感'
+
+    if '光学算法' in job.title:
+        job.career='光学算法工程师'        
         
-    if '机器人' in job.title:
+    if '机器人' in job.title or 'ROS' in job.title:
         job.career='机器人'
+
+    if '爬虫' in job.title:
+        job.career='爬虫工程师'
+
+    if 'ADAS' in job.title:
+        job.career='adas'
+
+    if 'GIS' in job.title:
+        job.career='gis'
+
+    if 'CAE' in job.title:
+        job.career='cae'
+
+    if 'ETL' in job.title:
+        job.career='etl'
         
-        
+    if 'unity3d' in job.title.lower() or 'u3d' in job.title.lower():
+        job.career='Unity3d'
         
     job.get_programming_languages(job_description_lower) \
         .get_databases(job_description_lower) \
@@ -804,6 +823,9 @@ def file2job(file, zhinengleibie, province):
     if job.company_title== '中核集团技术经济总院':
         job.industry='energy'
     
+    #black named companies
+    if job.company_title in company_blacklist:
+        return None
 #    if not job.check_industry():
 #        raise Exception("no industry")
         

@@ -3,6 +3,6 @@
 
 
 update _202003 set career='机器学习' where title like '%机器学习%' or title like '%深度学习%'  or title like '%推荐系统%'   or title like '%推荐算法%' or title like '%图像识别%'
-or title like '%人工智能%' or   title like '%nlp%'  or title like '%自然语言%' or  title like '%aml%' or title like 'AI' or title like '%数据科学家%'
+or title like '%人工智能%' or   title like '%nlp%'  or title like '%自然语言%' or  title like '%aml%' or title like '%AI%' or title like '%数据科学家%'
 or title like '%data scientist%' or title like '%知识图谱%'
 or zhinengleibie in ('机器学习工程师','深度学习工程师')
