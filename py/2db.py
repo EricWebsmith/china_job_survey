@@ -8,7 +8,7 @@ import os
 from os import path
 from datetime import datetime
 import re
-
+from requests import get
 from bs4 import BeautifulSoup
 from glob import glob
 import inspect
@@ -17,7 +17,7 @@ from common import is_article_english,object2list, get_featurenames
 import pandas as pd
 from db import get_conn
 
-from config import year, month, company_blacklist, title_key_blacklist, zhinengleibies
+from config import year, month, company_blacklist, title_key_blacklist
 year_month=f'{year}{month:02}'
 
 class Job():
@@ -44,7 +44,6 @@ class Job():
     
     #职能类别 软件工程师 算法工程师 系统架构设计师
     zhinengleibie=''
-    career=''
 
     #手机开发
     phone_app=False
@@ -73,107 +72,6 @@ class Job():
     #job_description
     job_description=""
     
-    #features from job description
-    #岁
-    ageism=False
-    
-    #languages
-    pl_python=False
-    pl_java=False
-    pl_javascript=False
-    pl_c_sharp=False
-    pl_php=False
-    #c++
-    pl_cpp=False
-    pl_objective_c=False
-    pl_swift=False
-    pl_matlab=False
-    pl_typescript=False
-    pl_ruby=False
-    pl_vba=False
-    pl_scala=False
-    pl_kotlin=False
-    pl_visual_basic=False
-    pl_go=False
-    pl_perl=False
-    pl_r=False
-    pl_rust=False
-    pl_lua=False
-    pl_julia=False
-    pl_haskell=False
-    pl_delphi=False
-
-    
-    #database
-    db_Oracle=False
-    db_MySQL=False
-    #aka mssql ms sql
-    db_SQL_Server=False
-    db_PostgreSQL=False
-    db_MongoDB=False
-    db_Firebase=False
-    db_Elasticsearch=False
-    db_Splunk=False
-    db_Redis=False
-    db_Apache_Hive=False
-    db_SQLite=False
-    db_DB2=False
-    db_SAP_HANA=False
-    db_MariaDB=False
-    db_Teradata=False
-    db_FileMaker=False
-    db_DynamoDB=False
-    db_Solr=False
-    db_Firebird=False
-    db_Sybase=False
-    db_Hbase=False
-    db_Neo4j=False
-    db_Ingres=False
-    db_Memcached=False
-    db_CouchBase=False
-    db_Informix=False
-    db_Netezza=False
-    db_CouchDB=False
-    db_Riak=False
-    db_dBase=False
-
-    bd_hadoop=False
-    bd_spark=False
-    bd_hive=False
-    bd_mapReduce=False
-
-    bd_kafka=False
-    bd_hbase=False
-    bd_storm=False
-
-    bd_pig=False
-    bd_mahout=False
-    bd_impala=False
-    bd_yarn=False
-    bd_alluxio=False
-    bd_flink=False
-    bd_presto=False
-    bd_heron=False
-    
-    def get_big_data_stats(self, job_description_lower):
-        self.bd_hadoop='hadoop' in job_description_lower
-        if 'hdfs' in job_description_lower:
-            self.bd_hadoop=True
-        self.bd_spark='spark' in job_description_lower
-        self.bd_hive='hive' in job_description_lower
-        self.bd_mapReduce='mapReduce' in job_description_lower
-        self.bd_kafka='kafka' in job_description_lower
-        self.bd_hbase='hbase' in job_description_lower
-        self.bd_storm='storm' in job_description_lower
-        self.bd_pig='pig' in job_description_lower
-        self.bd_mahout='mahout' in job_description_lower
-        self.bd_impala='impala' in job_description_lower
-        self.bd_yarn='yarn' in job_description_lower
-        self.bd_alluxio='alluxio' in job_description_lower
-        self.bd_flink='flink' in job_description_lower
-        self.bd_presto='presto' in job_description_lower
-        self.bd_heron='heron' in job_description_lower
-        return self
     
     province=''
     city=''
@@ -181,7 +79,45 @@ class Job():
     english=False
     japanese=False
     #company_info
-    company_id=''
+    company_title=""
+    
+    company_description=""
+    #外资(欧美)
+    #外资(非欧美)
+    #合资
+    #国企
+    #民营公司
+    #外企代表处
+    #政府机关
+    #事业单位
+    #非营利组织
+    #上市公司
+    #创业公司
+    company_type=''
+
+
+
+    #少于50人
+    #50-150人
+    #150-500人
+    #500-1000人
+    #1000-5000人
+    #5000-10000人
+    #10000人以上
+    company_size=''
+
+    #计算机/互联网/通信/电子
+    #会计/金融/银行/保险
+    #贸易/消费/制造/营运
+    #制药/医疗
+    #广告/媒体
+    #房地产/建筑
+    #专业服务/教育/培训
+    #服务业
+    #物流/运输
+    #能源/原材料
+    #政府/非营利组织/其他
+    industry=''
     
 
     
@@ -197,6 +133,7 @@ class Job():
         self.tag_rest_two_days=('做五休二' in tags or '周末双休' in tags or '朝九晚五' in tags)
         self.tag_stock=('股票期权' in tags)
         return self
+
     
     def get_salary(self, salary_string):
         #零时工，不统计
@@ -270,84 +207,34 @@ class Job():
                     self.experience='10+'
         return self
 
-
+    def check_company_size(self):
+        return not self.company_size==''
         
-    def get_programming_languages(self, job_description_lower):
-        self.pl_python='python' in job_description_lower
-        self.pl_java='java' in job_description_lower.replace('javascript','')
-        self.pl_javascript='javascript' in job_description_lower
-        self.pl_c_sharp='c#' in job_description_lower or '.net' in job_description_lower
-        self.pl_php='php' in job_description_lower
-
-        self.pl_objective_c='objective c' in job_description_lower
-        self.pl_swift='swift' in job_description_lower
-        self.pl_matlab='matlab' in job_description_lower
-        self.pl_typescript='typescript' in job_description_lower
-        self.pl_ruby='ruby' in job_description_lower
-        self.pl_vba='vba' in job_description_lower
-        self.pl_scala='scala' in job_description_lower
-        self.pl_kotlin='kotlin' in job_description_lower
-        self.pl_visual_basic='visual basic' in job_description_lower
-        self.pl_go='go' in job_description_lower
-        self.pl_perl='perl' in job_description_lower
-        self.pl_rust='rust' in job_description_lower
-        self.pl_lua='lua' in job_description_lower
-        self.pl_julia='julia' in job_description_lower
-        self.pl_haskell='haskell' in job_description_lower
-        self.pl_delphi='delphi' in job_description_lower
+    def get_company_size(self, tag):
+        if (tag=='少于50人'):
+            self.company_size='50-'
+        elif (tag=='50-150人'):
+            self.company_size='50-150'
+        elif (tag=='150-500人'):
+            self.company_size='150-500'
+        elif (tag=='500-1000人'):
+            self.company_size='500-1000'
+        elif (tag=='1000-5000人'):
+            self.company_size='1000-5000'
+        elif (tag=='5000-10000人'):
+            self.company_size='5000-10000'
+        elif (tag=='10000人以上'):
+            self.company_size='10000+'
+        return self
         
-        #c++
-        self.pl_cpp='c++' in job_description_lower
-        if 'c语言'  in job_description_lower:
-            self.pl_cpp=True
-        if re.search(r'[^a-z]c[^a-z]',job_description_lower):
-            self.pl_cpp=True
-            
-        #r语言
-        if 'r语言' in job_description_lower:
-            self.pl_r=True
-        if re.search(r'[^a-z]r[^a-z]',job_description_lower):
-            self.pl_r=True
-            
+    def get_company_type(self, tag):
+        if tag in ['外资（欧美）','外资（非欧美）','合资','国企','民营公司','外企代表处','政府机关','事业单位','非营利组织','上市公司''创业公司']:
+            self.company_type=tag
         return self
 
-    
-    def get_databases(self, job_description_lower):
-        #database
-        self.db_Oracle='oracle' in job_description_lower
-        self.db_MySQL='mysql' in job_description_lower
-        #aka mssql ms sql
-        self.db_SQL_Server='sql server' in job_description_lower \
-            or 'mssql' in job_description_lower \
-            or 'ms sql' in job_description_lower 
-        self.db_PostgreSQL='postgresql' in job_description_lower
-        self.db_MongoDB='mongodb' in job_description_lower
-        self.db_Firebase='firebase' in job_description_lower
-        self.db_Elasticsearch='elasticsearch' in job_description_lower
-        self.db_Splunk='splunk' in job_description_lower
-        self.db_Redis='redis' in job_description_lower
-        self.db_Apache_Hive='apache hive' in job_description_lower
-        self.db_SQLite='sqlite' in job_description_lower
-        self.db_DB2='db2' in job_description_lower
-        self.db_SAP_HANA='sap hana' in job_description_lower
-        self.db_MariaDB='mariadb' in job_description_lower
-        self.db_Teradata='teradata' in job_description_lower
-        self.db_FileMaker='filemaker' in job_description_lower
-        self.db_DynamoDB='dynamodb' in job_description_lower
-        self.db_Solr='solr' in job_description_lower
-        self.db_Firebird='firebird' in job_description_lower
-        self.db_Sybase='sybase' in job_description_lower
-        self.db_Hbase='hbase' in job_description_lower
-        self.db_Neo4j='neo4j' in job_description_lower
-        self.db_Ingres='ingres' in job_description_lower
-        self.db_Memcached='memcached' in job_description_lower
-        self.db_CouchBase='couchbase' in job_description_lower
-        self.db_Informix='informix' in job_description_lower
-        self.db_Netezza='netezza' in job_description_lower
-        self.db_CouchDB='couchdb' in job_description_lower
-        self.db_Riak='riak' in job_description_lower
-        self.db_dBase='dbase' in job_description_lower
-        return self
+    def check_company_type(self):
+        return not self.company_type==''
+
 
     def check_industry(self):
         return not self.industry==''
@@ -402,6 +289,15 @@ class Job():
 def printObject(o):
     print(inspect.getmembers(o))
 
+def get_company_tags(company_link):
+    response=get(company_link)
+    response.encoding='gbk'
+    soup=BeautifulSoup(response.text, 'html.parser')
+    ltype_tag=soup.select_one('.ltype')
+    if not ltype_tag:
+        return []
+    info_string=ltype_tag.text
+    return [info.strip() for info in info_string.split('|')]
 
 def file2job(file, zhinengleibie, province):
     job=Job()
@@ -414,6 +310,13 @@ def file2job(file, zhinengleibie, province):
 
     job.job_id=path.split(file)[-1].replace(".html","")
     
+    if job.job_id in ['110455749','77612262','107681687']:
+        return None
+    
+    #page title
+
+
+    #print(file)
     content=""
     try:
         with open(file, mode='r',encoding='gbk') as f:
@@ -430,13 +333,13 @@ def file2job(file, zhinengleibie, province):
         return None
     job.page_title=title_tag.text
     if '异地招聘' in job.page_title:
-        job.province='异地招聘'
-        job.city='异地招聘'
+        return None
     #职业 start
     #首先判断职业，如果职业不是程序员，直接pass
+    zhineng_tag=soup.find('span',{'class':'label'},text='职能类别：')
+    if not zhineng_tag:
+        return None
 
-
-    job.career=zhinengleibie
 
     #职业 end
     
@@ -460,6 +363,7 @@ def file2job(file, zhinengleibie, province):
 
     if any(key in job.title for key in title_key_blacklist):
         return None
+    
 
     #'深圳-福田区|5-7年经验|本科|招1人|04-01发布'
     job.job_summary=soup.select_one(".msg").text.replace('\xa0','').replace(' ','').strip()
@@ -481,9 +385,8 @@ def file2job(file, zhinengleibie, province):
         if '招' in info and '人' in info:
             headcount_string=info.replace('招','').replace('人','')            
             if headcount_string=='若干':
-                job.headcount=5
-            else:
-                job.headcount=int(headcount_string)
+                headcount_string='5'
+            job.headcount=int(headcount_string)
     
         if info.endswith('发布'):
     
@@ -508,52 +411,75 @@ def file2job(file, zhinengleibie, province):
     job.job_description=h2_span.parent.find_next('div').text.strip()
     job_description_lower=job.job_description.lower()
     job_description_lower=job.title+" "+job_description_lower
+    
 
+        
     job.get_programming_languages(job_description_lower) \
         .get_databases(job_description_lower) \
-        .get_big_data_stats(job_description_lower) 
+        .get_big_data_stats(job_description_lower) \
+        .get_machine_learning_stats(job_description_lower) 
     
-    #english and japanese
-    if '英语' in job_description_lower or '英文' in job_description_lower:
-        job.english=True
+
     #如果招聘信息本身都是英语写的，那么肯定要求英语
     if is_article_english(job_description_lower):
         job.english=True
-    if '日语' in job_description_lower or '日文' in job_description_lower:
-        job.japanese=True
-    
-    #手机程序员并不单独归类，而是用smart_phone属性表示
-    #手机应用开发工程师    
-    if 'iso' in job_description_lower or 'iphone' in job_description_lower:
-        job.phone_iso=True
-        job.phone_app=True
-    if 'android' in job_description_lower:
-        job.phone_android=True
-        job.phone_app=True
 
+    
+    #<span class="bname">公司信息</span>
+    company_info_tag=soup.find('span',text='公司信息')
+    if company_info_tag:
+        job.company_description=company_info_tag.parent.find_next('div').text.replace('\xa0',' ').strip()
     company_title_tag=soup.select_one('.com_name')
     if not company_title_tag:
         company_title_tag=soup.select_one('.catn')
-    company_title=company_title_tag.text.strip()
-    #black named companies
-    if company_title in company_blacklist:
+    job.company_title=company_title_tag.text.strip()
+    #['民营公司', '150-500人', '服装/纺织/皮革']
+    company_tags=[p.text.strip() for p in soup.select('.com_tag .at')]
+    
+    if len(company_tags)>0:
+        job.get_company_type(company_tags[0])
+    if job.company_type=='':
+        company_link=company_title_tag.attrs['href']
+        company_tags=get_company_tags(company_link)
+        for tag in company_tags:
+            if job.get_company_type(tag).check_company_type():
+                break 
+
+    if job.company_type=='':
         return None
-    job.company_link=company_title_tag.attrs['href']
-    job.company_id=re.match('.*(co\d*).html', job.company_link).group(1)
+    
+    job.get_company_size(company_tags[1])
+    if not job.check_company_size():
+        company_link=company_title_tag.attrs['href']
+        company_tags=get_company_tags(company_link)
+        for tag in company_tags:
+            if job.get_company_size(tag).check_company_size():
+                break
+            
+    #计算机/互联网/通信/电子
+    industry_tags=[p.text.strip() for p in soup.select('.com_tag .at a') if not p.text=='']
+    
+    
+    if len(industry_tags)==0:
+        company_link=soup.select_one('.com_name').attrs['href']
+        industry_tags=get_company_tags(company_link)
+    
+    for industry_tag in industry_tags:
+        job.get_industry(industry_tag)
+    
+    if job.company_title in ['系统集成有限责任公司','博彦科技股份有限公司']:
+        job.industry='computer'
+    if job.company_title=='软件与服务中心':
+        job.industry='trade'
+    if job.company_title== '中核集团技术经济总院':
+        job.industry='energy'
+    
+    #black named companies
+    if job.company_title in company_blacklist:
+        return None
+#    if not job.check_industry():
+#        raise Exception("no industry")
         
-    #996
-    #朝九晚五，周末双休 双休 不加班
-    if '朝九晚五' in job.job_description \
-        or '朝九晚六' in job.job_description \
-        or '双休' in job.job_description \
-        or '不加班' in job.job_description:
-        job._996_no=True
-    if '朝九晚九' in job.job_description:
-        job._996_yes=True
-    if job.tag_rest_two_days:
-        job._996_no=True
-    if job.published_on_weekend:
-        job._996_yes=True
     
     return job
 
@@ -567,6 +493,7 @@ def try_rename(file):
 
 def file2db(file, zhinengleibie, province):
     conn=get_conn()
+
         
     filename=path.split(file)[-1]
     job_id=filename.replace(".html","")           
@@ -599,7 +526,8 @@ def main():
     provinces=['北京','上海','广东','深圳','天津','重庆','江苏','浙江','四川','海南','福建','山东','江西','广西','安徽','河北','河南','湖北','湖南','陕西','山西','黑龙江','辽宁','吉林','云南','贵州','甘肃','内蒙古','宁夏','西藏','新疆','青海']
     data_folder = '../../data/51jobs_{}/'.format(year_month)
     back_folder = '../../data/51jobs_{}_b/'.format(year_month)
-    for zhinengleibie in zhinengleibies.values():
+    zhinengleibies=['高级软件工程师', '软件工程师','算法工程师','机器学习工程师','深度学习工程师','图像算法工程师','图像处理工程师','语音识别工程师','图像识别工程师','机器视觉工程师','自然语言处理（NLP）','系统架构设计师','互联网软件开发工程师','手机应用开发工程师','网站架构设计师']
+    for zhinengleibie in zhinengleibies:
         category_back_folder=path.join(back_folder, zhinengleibie)
         if not path.isdir(category_back_folder):
             os.mkdir(category_back_folder)

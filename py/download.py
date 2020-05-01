@@ -13,10 +13,18 @@ from urllib.request import urlretrieve
 from requests import get
 from bs4 import BeautifulSoup
 import threading
-from config import year, month
+from config import year, month, zhinengleibies
 
 
 data_folder = f'../../data/51jobs_{year}{month:02}/'
+
+send_headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.122 Safari/537.36",
+    "Connection": "keep-alive",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+    "Accept-Language": "zh-CN,zh;q=0.8"
+    }
+
 
 
 def main():
@@ -69,7 +77,7 @@ def main():
                 filename = filename.split('?')[0]
                 destination_file = path.join(folder, filename)
                 if not path.isfile(destination_file):
-                    print(link)
+                    #print(link)
                     t = threading.Thread(target=urlretrieve, args=(link, path.join(folder, filename)))
                     t.start()
                     #urlretrieve(link, path.join(folder, filename))
@@ -79,25 +87,11 @@ def main():
                 pass
             
     #0100是软件，2500是互联网
-    categories={}
-    categories['0106']='高级软件工程师'
-    categories['0107']='软件工程师'
-    categories['0109']='机器学习工程师'
-    categories['0110']='深度学习工程师'
-    categories['0111']='图像算法工程师'
-    categories['0112']='图像处理工程师'
-    categories['0113']='语音识别工程师'
-    categories['0114']='图像识别工程师'
-    categories['0115']='机器视觉工程师'
-    categories['0116']='自然语言处理（NLP）'
-    categories['0148']='算法工程师'
-    categories['0143']='系统架构设计师'
-    categories['2501']='互联网软件开发工程师'
-    categories['2537']='手机应用开发工程师'
-    categories['2512']='网站架构设计师'
+
+    
     #categories['']=''
     #categories['']=''
-    for category_key, category_name in categories.items():
+    for category_key, category_name in zhinengleibies.items():
         job_category_folder = path.join(data_folder, category_name)
         if not path.isdir(job_category_folder):
             mkdir(job_category_folder)
@@ -108,15 +102,16 @@ def main():
                 mkdir(province_folder)
             #links -
             #first page
-            first_page_url = 'https://search.51job.com/list/{0},000000,{1},00,9,99,%2520,2,1.html?lang=c&stype=&postchannel=0000&workyear=99&cotype=99&degreefrom=99&jobterm=99&companysize=99&providesalary=99&lonlat=0%2C0&radius=-1&ord_field=0&confirmdate=9&fromType=&dibiaoid=0&address=&line=&specialarea=00&from=&welfare='.format(province_code, category_key)
-            first_page = get(first_page_url)
-            first_page.encoding = 'gb2312'
-            soup = BeautifulSoup(first_page.text,"html.parser")
+            first_page_url = f'https://search.51job.com/list/{province_code},000000,{category_key},00,9,99,%2520,2,1.html?lang=c&stype=&postchannel=0000&workyear=99&cotype=99&degreefrom=99&jobterm=99&companysize=99&providesalary=99&lonlat=0%2C0&radius=-1&ord_field=0&confirmdate=9&fromType=&dibiaoid=0&address=&line=&specialarea=00&from=&welfare='
+            #print(first_page_url)
+            first_page = urlretrieve(first_page_url)
+            #first_page.encoding = 'gb2312'
+            soup = BeautifulSoup(open(first_page[0], encoding='gbk'),"html.parser")
             #page_count_string='共328页，到第'
             page_count_string = soup.select_one(".p_in .td").text
             re_result = re.match(r'共(\d+)页，到第',page_count_string)
             total_page = int(re_result.group(1))
-            print("{0} has {1} pages".format(province_name, total_page))
+            print(f'{province_name} has {total_page} pages for {category_name}')
             
 
 
@@ -125,9 +120,10 @@ def main():
                 #'https://sou.zhaopin.com/?jl=530&sf=0&st=0&jt=23,160000,045'
                 list_url = 'https://search.51job.com/list/{0},000000,{1},00,9,99,%2B,2,{2}.html?lang=c&stype=1&postchannel=0000&workyear=99&cotype=99&degreefrom=99&jobterm=99&companysize=99&lonlat=0%2C0&radius=-1&ord_field=0&confirmdate=9&fromType=&dibiaoid=0&address=&line=&specialarea=00&from=&welfare='.format(province_code, category_key, page_index)
                 try:
-                    list_page = get(list_url)
-                    list_page.encoding = 'gb2312'
-                    soup = BeautifulSoup(list_page.text,"html.parser")
+                    list_page = urlretrieve(list_url)
+                    #list_page.encoding = 'gb2312'
+                    #soup = BeautifulSoup(list_page.text,"html.parser")
+                    soup = BeautifulSoup(open(list_page[0], encoding='gbk'),"html.parser")
                     #get list page
                     links = [tag.attrs['href'] for tag in soup.select(".t1 a")]
                     download_pages(links, province_folder)
