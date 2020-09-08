@@ -18,11 +18,15 @@ import pandas as pd
 from db import get_conn
 
 from config import year, month, company_blacklist, title_key_blacklist, zhinengleibies
+
+#month=1
+
 year_month=f'{year}{month:02}'
 
 class Job():
     #basic info
     job_id=""
+    year_month="202009"
     title=""
     page_title=''
     
@@ -154,6 +158,9 @@ class Job():
     bd_flink=False
     bd_presto=False
     bd_heron=False
+
+    def __init__(self, year_month):
+        self.year_month=year_month
     
     def get_big_data_stats(self, job_description_lower):
         self.bd_hadoop='hadoop' in job_description_lower
@@ -178,8 +185,8 @@ class Job():
     province=''
     city=''
     #languages
-    english=False
-    japanese=False
+    lang_english=False
+    lang_japanese=False
     #company_info
     company_id=''
     
@@ -298,7 +305,7 @@ class Job():
         
         #c++
         self.pl_cpp='c++' in job_description_lower
-        if 'c语言'  in job_description_lower:
+        if 'c语言' in job_description_lower:
             self.pl_cpp=True
         if re.search(r'[^a-z]c[^a-z]',job_description_lower):
             self.pl_cpp=True
@@ -349,52 +356,11 @@ class Job():
         self.db_dBase='dbase' in job_description_lower
         return self
 
-    def check_industry(self):
-        return not self.industry==''
-
-    def get_industry(self, industry_tag):
-        if industry_tag in ['计算机软件','计算机硬件','计算机服务(系统、数据服务、维修)','通信/电信/网络设备','通信/电信运营、增值服务','互联网/电子商务','网络游戏','电子技术/半导体/集成电路','仪器仪表/工业自动化']:
-            self.industry='computer'
-        #会计/金融/银行/保险
-        if industry_tag in ['会计/审计','金融/投资/证券','银行','保险','信托/担保/拍卖/典当']:
-            self.industry='finance'
-        #贸易/消费/制造/营运
-        if industry_tag in ['贸易/进出口','批发/零售','快速消费品(食品、饮料、化妆品)','服装/纺织/皮革','家具/家电/玩具/礼品','奢侈品/收藏品/工艺品/珠宝','办公用品及设备','机械/设备/重工','汽车及零配件']:
-            self.industry='trade'
-        #制药/医疗
-        if industry_tag in ['制药/生物工程','医疗/护理/卫生','医疗设备/器械']:
-            self.industry='medical'
-        #广告/媒体
-        if industry_tag in ['广告','公关/市场推广/会展','影视/媒体/艺术/文化传播','文字媒体/出版','印刷/包装/造纸']:
-            self.industry='ads'
-        #房地产/建筑
-        if industry_tag in ['房地产','建筑/建材/工程','家居/室内设计/装潢','物业管理/商业中心']:
-            self.industry='realestate'
-        #专业服务/教育/培训
-        if industry_tag in ['中介服务','专业服务(咨询、人力资源、财会)','外包服务','检测，认证','法律','教育/培训/院校','学术/科研','租赁服务']:
-            self.industry='edu'
-        #服务业
-        if industry_tag in ['餐饮业','酒店/旅游','娱乐/休闲/体育','美容/保健','生活服务']:
-            self.industry='service'
-        #物流/运输
-        if industry_tag in ['交通/运输/物流','航天/航空']:
-            self.industry='logistic'
-        #能源/原材料
-        if industry_tag in ['石油/化工/矿产/地质','采掘业/冶炼','电气/电力/水利','新能源','原材料和加工']:
-            self.industry='energy'
-        #政府/非营利组织/其他
-        if industry_tag in ['政府/公共事业','非营利组织','环保','农/林/牧/渔','多元化业务集团公司']:
-            self.industry='gov'
-        return self
             
     def check_all(self, raise_exception=False):
 #        if not self.check_company_size():
 #            raise Exception("check_company_size")
         if raise_exception:
-            if self.company_type=='':
-                raise Exception("check_company_type")
-            if self.industry=='':
-                raise Exception("check_industry")
             if self.experience=='':
                 raise Exception("check_working_experience")
 
@@ -404,7 +370,7 @@ def printObject(o):
 
 
 def file2job(file, zhinengleibie, province):
-    job=Job()
+    job=Job(year_month)
     job.zhinengleibie=zhinengleibie
 
     if province=='深圳':
@@ -430,8 +396,9 @@ def file2job(file, zhinengleibie, province):
         return None
     job.page_title=title_tag.text
     if '异地招聘' in job.page_title:
-        job.province='异地招聘'
-        job.city='异地招聘'
+        #job.province='异地招聘'
+        #job.city='异地招聘'
+        return
     #职业 start
     #首先判断职业，如果职业不是程序员，直接pass
 
@@ -495,9 +462,9 @@ def file2job(file, zhinengleibie, province):
 
         #language
         if '英语' in info or '英文' in info:
-            job.english=True
+            job.lang_english=True
         if '日语' in info or '日文' in info:
-            job.japanese=True
+            job.lang_japanese=True
         
     #tags
     tags=[tag.text for tag in soup.select('.sp4')]
@@ -515,12 +482,12 @@ def file2job(file, zhinengleibie, province):
     
     #english and japanese
     if '英语' in job_description_lower or '英文' in job_description_lower:
-        job.english=True
+        job.lang_english=True
     #如果招聘信息本身都是英语写的，那么肯定要求英语
     if is_article_english(job_description_lower):
-        job.english=True
+        job.lang_english=True
     if '日语' in job_description_lower or '日文' in job_description_lower:
-        job.japanese=True
+        job.lang_japanese=True
     
     #手机程序员并不单独归类，而是用smart_phone属性表示
     #手机应用开发工程师    
@@ -538,8 +505,8 @@ def file2job(file, zhinengleibie, province):
     #black named companies
     if company_title in company_blacklist:
         return None
-    job.company_link=company_title_tag.attrs['href']
-    job.company_id=re.match('.*(co\d*).html', job.company_link).group(1)
+    company_link=company_title_tag.attrs['href']
+    job.company_id=re.match(r'.*(co\d*).html', company_link).group(1)
         
     #996
     #朝九晚五，周末双休 双休 不加班
@@ -571,11 +538,12 @@ def file2db(file, zhinengleibie, province):
     filename=path.split(file)[-1]
     job_id=filename.replace(".html","")           
     
-    exists=conn.execute("select count(1) from _{} where job_id='{}'".format(year_month, job_id)).fetchall()[0][0]
+    exists=conn.execute(f"select count(1) from jobs where job_id='{job_id}' and year_month={year_month}").fetchall()[0][0]
     if exists:
         try_rename(file)
         return
-    print(file)
+
+    #print(file)
     job=file2job(file, zhinengleibie, province)
     if not job:
         try_rename(file)
@@ -584,7 +552,7 @@ def file2db(file, zhinengleibie, province):
     data=pd.DataFrame(columns=get_featurenames(job))
     l=object2list(job)
     data.loc[job.job_id]=l
-    data.to_sql("_"+year_month,conn,if_exists="append", index=False)
+    data.to_sql("jobs", conn, if_exists="append", index=False)
 
     conn.close()
     try_rename(file)   
@@ -595,22 +563,48 @@ def city2db(data_folder,zhinengleibie, province):
     for file in files:
         file2db(file, zhinengleibie, province) 
 
-def main():
+def process_folder(zhinengleibie):
+    print(f"{zhinengleibie} starting...")
     provinces=['北京','上海','广东','深圳','天津','重庆','江苏','浙江','四川','海南','福建','山东','江西','广西','安徽','河北','河南','湖北','湖南','陕西','山西','黑龙江','辽宁','吉林','云南','贵州','甘肃','内蒙古','宁夏','西藏','新疆','青海']
     data_folder = '../../data/51jobs_{}/'.format(year_month)
     back_folder = '../../data/51jobs_{}_b/'.format(year_month)
-    for zhinengleibie in zhinengleibies.values():
-        category_back_folder=path.join(back_folder, zhinengleibie)
-        if not path.isdir(category_back_folder):
-            os.mkdir(category_back_folder)
-        for province in provinces:
-            city_back_folder=path.join(category_back_folder, province)
-            if not path.isdir(city_back_folder):
-                os.mkdir(city_back_folder)
+    category_back_folder=path.join(back_folder, zhinengleibie)
+    if not path.isdir(category_back_folder):
+        os.mkdir(category_back_folder)
+    for province in provinces:
+        city_back_folder=path.join(category_back_folder, province)
+        if not path.isdir(city_back_folder):
+            os.mkdir(city_back_folder)
 
-            city2db(data_folder, zhinengleibie, province)
-            #t=threading.Thread(target=city2db, args=(path.join(data_folder,job_category, city), city)) 
-            #t.start()
+        city2db(data_folder, zhinengleibie, province)
+    print(f"{zhinengleibie} succeeded.")
+
+def main():
+    from concurrent.futures.process import ProcessPoolExecutor
+    data_folder = '../../data/51jobs_{}/'.format(year_month)
+    categoris=[d for d in  os.listdir(data_folder) if  path.isdir(f'{data_folder}{d}')]
+    with ProcessPoolExecutor() as executor:
+        executor.map(process_folder, categoris)
+    #provinces=['北京','上海','广东','深圳','天津','重庆','江苏','浙江','四川','海南','福建','山东','江西','广西','安徽','河北','河南','湖北','湖南','陕西','山西','黑龙江','辽宁','吉林','云南','贵州','甘肃','内蒙古','宁夏','西藏','新疆','青海']
+    #data_folder = '../../data/51jobs_{}/'.format(year_month)
+    #back_folder = '../../data/51jobs_{}_b/'.format(year_month)
+    # for _, dirs, _ in os.walk(data_folder):
+    #     for dir in dirs:
+    #         print(dir)
+    #         #process_folder(year_month, dir)
+
+def main2():
+    from concurrent.futures.process import ProcessPoolExecutor
+    data_folder = '../../data/51jobs_{}/'.format(year_month)
+    categoris=[d for d in  os.listdir(data_folder) if  path.isdir(f'{data_folder}{d}')]
+
+    #provinces=['北京','上海','广东','深圳','天津','重庆','江苏','浙江','四川','海南','福建','山东','江西','广西','安徽','河北','河南','湖北','湖南','陕西','山西','黑龙江','辽宁','吉林','云南','贵州','甘肃','内蒙古','宁夏','西藏','新疆','青海']
+    #data_folder = '../../data/51jobs_{}/'.format(year_month)
+    #back_folder = '../../data/51jobs_{}_b/'.format(year_month)
+
+
+    for cat in categoris:    
+        process_folder(cat)
 
 if __name__=='__main__':
     #global year_month

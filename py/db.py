@@ -12,7 +12,7 @@ import pandas as pd
 def get_conn():
     params = quote_plus("DRIVER={SQL Server Native Client 11.0};"
                                      "SERVER=localhost;"
-                                     "DATABASE=jobs;"
+                                     "DATABASE=it_jobs;"
                                      "Trusted_Connection=yes;")
     
     engine = create_engine("mssql+pyodbc:///?odbc_connect={}".format(params))

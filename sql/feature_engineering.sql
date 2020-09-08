@@ -1,87 +1,87 @@
 --career
-delete from [jobs].[dbo].[_202005] where city ='º¼Öİ' and title like '00%(Ö°Î»±àºÅ£º%)'
-delete from [jobs].[dbo].[_202001] where province ='ÒìµØÕĞÆ¸'
-delete from [jobs].[dbo].[_202001] where job_summary like '%Ó¦½ìÉú%'
-delete from [jobs].[dbo].[_202001] where title like '%Ó¦½ì%'
+delete [jobs] where city ='æ­å·' and title like '00%(èŒä½ç¼–å·ï¼š%)'
+delete [jobs] where province ='å¼‚åœ°æ‹›è˜'
+delete [jobs] where job_summary like '%åº”å±Šç”Ÿ%'
+delete [jobs] where title like '%åº”å±Š%'
 
 
-update _202005 set career='Èí¼ş¹¤³ÌÊ¦' where zhinengleibie in ('Èí¼ş¹¤³ÌÊ¦', '¸ß¼¶Èí¼ş¹¤³ÌÊ¦', 'PHP¿ª·¢¹¤³ÌÊ¦', 'Java¿ª·¢¹¤³ÌÊ¦', 'C¿ª·¢¹¤³ÌÊ¦', 'Python¿ª·¢¹¤³ÌÊ¦', '.NET¿ª·¢¹¤³ÌÊ¦', '½Å±¾¿ª·¢¹¤³ÌÊ¦', 'Ruby¿ª·¢¹¤³ÌÊ¦', 'Go¿ª·¢¹¤³ÌÊ¦')
-update _202005 set career='Èí¼ş¹¤³ÌÊ¦' where career='Ò»°ã³ÌĞòÔ±'
-update _202005 set career='Android¿ª·¢¹¤³ÌÊ¦' where title like '%Android%' or title like '%°²×¿%' 
+update jobs set career='è½¯ä»¶å·¥ç¨‹å¸ˆ' where zhinengleibie in ('è½¯ä»¶å·¥ç¨‹å¸ˆ', 'é«˜çº§è½¯ä»¶å·¥ç¨‹å¸ˆ', 'PHPå¼€å‘å·¥ç¨‹å¸ˆ', 'Javaå¼€å‘å·¥ç¨‹å¸ˆ', 'Cå¼€å‘å·¥ç¨‹å¸ˆ', 'Pythonå¼€å‘å·¥ç¨‹å¸ˆ', '.NETå¼€å‘å·¥ç¨‹å¸ˆ', 'è„šæœ¬å¼€å‘å·¥ç¨‹å¸ˆ', 'Rubyå¼€å‘å·¥ç¨‹å¸ˆ', 'Goå¼€å‘å·¥ç¨‹å¸ˆ')
+update jobs set career='è½¯ä»¶å·¥ç¨‹å¸ˆ' where career='ä¸€èˆ¬ç¨‹åºå‘˜'
+update jobs set career='Androidå¼€å‘å·¥ç¨‹å¸ˆ' where title like '%Android%' or title like '%å®‰å“%' 
 
-update _202005 set career='ĞÅºÅ´¦Àí' where title like '%ĞÅºÅ´¦Àí%'
-update _202005 set career='ÅÀ³æ¿ª·¢¹¤³ÌÊ¦' where title like '%ÅÀ³æ%'
-update _202005 set career='ADAS' where title like '%adas%'
-update _202005 set career='»úÆ÷ÈË' where title like '%»úÆ÷ÈË%' or title like '%ROS%'
-update _202005 set career='GIS' where title like '%GIS%'
-update _202005 set career='CAE' where title like '%CAE%'
-update _202005 set career='¹âÑ§Ëã·¨' where title like '%¹âÑ§Ëã·¨¹¤³ÌÊ¦%'
-update _202005 set career='ETL' where title like '%ETL%'
-update _202005 set career='Unity3D' where title like '%Unity3D%'
-update _202005 set career='Ò£¸Ğ' where title like '%Ò£¸Ğ%'
-update _202005 set career='¹æ»®Ëã·¨' where title like '%¹æ»®Ëã·¨¹¤³ÌÊ¦%'
-update _202005 set career='ÊÓ¾õÈí¼ş¹¤³ÌÊ¦' where title like '%ÈıÎ¬ÖØ½¨%'
-update _202005 set career='ÊÓ¾õÈí¼ş¹¤³ÌÊ¦' where title like '%ÊÓ¾õÈí¼ş¹¤³ÌÊ¦%'
-
-
-update _202005 set career='´óÊı¾İ' where title like '%´óÊı¾İ%'
-update _202005 set career='CTÖØ½¨' where title like '%CTÖØ½¨%'
-update _202005 set career='SLAM' where title like '%SLAM%'
-update _202005 set career='DSP' where title like '%DSP%'
-update _202005 set career='ÉúÎïĞÅÏ¢' where title like '%ÉúÎïĞÅÏ¢%'
-update _202005 set career='±àÒëÆ÷¿ª·¢¹¤³ÌÊ¦' where title like '%±àÒëÆ÷%'
-update _202005 set career='Ëã·¨¹¤³ÌÊ¦' where title like '%Ëã·¨%' or zhinengleibie='Ëã·¨¹¤³ÌÊ¦'
-update _202005 set career='×ÔÈ»ÓïÑÔ´¦Àí£¨NLP£©' where title like '%×ÔÈ»ÓïÑÔ´¦Àí%' or title like '%NLP%'
-
-delete from _202005 where zhinengleibie='ÍÆ¼öËã·¨¹¤³ÌÊ¦' and not title like '%ÍÆ¼ö%'
-update _202005 set career='ÍÆ¼öËã·¨¹¤³ÌÊ¦' where title like '%ÍÆ¼öËã·¨%'
-
-delete from _202005 where zhinengleibie='ËÑË÷Ëã·¨¹¤³ÌÊ¦' and not title like '%ËÑË÷%'
-update _202005 set career='ËÑË÷Ëã·¨¹¤³ÌÊ¦' where title like '%ËÑË÷Ëã·¨%' or title like '%Search Algorithm%'
-update _202005 set career='·´×÷±×Ëã·¨¹¤³ÌÊ¦' where title like '%·´×÷±×%'
-
-update _202005 set career='Í¼Ïñ´¦Àí¹¤³ÌÊ¦' where title like '%Í¼Ïñ´¦Àí%'
-update _202005 set career='Í¼ÏñËã·¨¹¤³ÌÊ¦' where title like '%Í¼ÏñËã·¨%' or zhinengleibie='Í¼ÏñËã·¨¹¤³ÌÊ¦'
-update _202005 set career='ÈË¹¤ÖÇÄÜ' where title like '%AI%' or title like '%ÈË¹¤ÖÇÄÜ%' or title like '%Éñ¾­ÍøÂç%'
-update _202005 set career='Çø¿éÁ´¿ª·¢' where title like '%Çø¿éÁ´%' or zhinengleibie='Çø¿éÁ´¿ª·¢'
-update _202005 set career='CTO' where title like '%CTO%' or title like '%Ê×Ï¯¼¼Êõ¹Ù%'  or title like '%ÖÇ»ÛÑĞ¾¿ÔºÔº³¤%'
-update _202005 set career='Ğ¾Æ¬' where title like '%Ğ¾Æ¬%' or title like '%SOCÉè¼Æ%'
-update _202005 set career='Çı¶¯¹¤³ÌÊ¦'  where title like '%driver%' or title like '%Çı¶¯%'
-update _202005 set career='»úÆ÷Ñ§Ï°' where title like '%»úÆ÷Ñ§Ï°%' or zhinengleibie='»úÆ÷Ñ§Ï°¹¤³ÌÊ¦'
-update _202005 set career='Éî¶ÈÑ§Ï°¹¤³ÌÊ¦' where title like '%Éî¶ÈÑ§Ï°%'
-update _202005 set career='Êı¾İ¿ÆÑ§¼Ò' where title like '%Data Scientist%' or  title like '%Êı¾İ¿ÆÑ§¼Ò%'
+update jobs set career='ä¿¡å·å¤„ç†' where title like '%ä¿¡å·å¤„ç†%'
+update jobs set career='çˆ¬è™«å¼€å‘å·¥ç¨‹å¸ˆ' where title like '%çˆ¬è™«%'
+update jobs set career='ADAS' where title like '%adas%'
+update jobs set career='æœºå™¨äºº' where title like '%æœºå™¨äºº%' or title like '%ROS%'
+update jobs set career='GIS' where title like '%GIS%'
+update jobs set career='CAE' where title like '%CAE%'
+update jobs set career='å…‰å­¦ç®—æ³•' where title like '%å…‰å­¦ç®—æ³•å·¥ç¨‹å¸ˆ%'
+update jobs set career='ETL' where title like '%ETL%'
+update jobs set career='Unity3D' where title like '%Unity3D%'
+update jobs set career='é¥æ„Ÿ' where title like '%é¥æ„Ÿ%'
+update jobs set career='è§„åˆ’ç®—æ³•' where title like '%è§„åˆ’ç®—æ³•å·¥ç¨‹å¸ˆ%'
+update jobs set career='è§†è§‰è½¯ä»¶å·¥ç¨‹å¸ˆ' where title like '%ä¸‰ç»´é‡å»º%'
+update jobs set career='è§†è§‰è½¯ä»¶å·¥ç¨‹å¸ˆ' where title like '%è§†è§‰è½¯ä»¶å·¥ç¨‹å¸ˆ%'
 
 
-update _202005 set career='¼Ü¹¹Ê¦' where title like '%ÏµÍ³¼Ü¹¹Ê¦%' or title like '%¼Ü¹¹Ê¦%' or title like '%¼Ü¹¹×¨¼Ò%' or title like '%architect%'   or title like '%¼Ü¹¹ÑĞ·¢%'
-update _202005 set career='¼¼ÊõÖ÷¹Ü' where title like '%Ö÷¹Ü%' or title like '%leader%' 
+update jobs set career='å¤§æ•°æ®' where title like '%å¤§æ•°æ®%'
+update jobs set career='CTé‡å»º' where title like '%CTé‡å»º%'
+update jobs set career='SLAM' where title like '%SLAM%'
+update jobs set career='DSP' where title like '%DSP%'
+update jobs set career='ç”Ÿç‰©ä¿¡æ¯' where title like '%ç”Ÿç‰©ä¿¡æ¯%'
+update jobs set career='ç¼–è¯‘å™¨å¼€å‘å·¥ç¨‹å¸ˆ' where title like '%ç¼–è¯‘å™¨%'
+update jobs set career='ç®—æ³•å·¥ç¨‹å¸ˆ' where title like '%ç®—æ³•%' or zhinengleibie='ç®—æ³•å·¥ç¨‹å¸ˆ'
+update jobs set career='è‡ªç„¶è¯­è¨€å¤„ç†ï¼ˆNLPï¼‰' where title like '%è‡ªç„¶è¯­è¨€å¤„ç†%' or title like '%NLP%'
 
-update _202005 set career='·Ö²¼Ê½' where career='Èí¼ş¹¤³ÌÊ¦' and title like '%·Ö²¼Ê½%' 
+delete from jobs where zhinengleibie='æ¨èç®—æ³•å·¥ç¨‹å¸ˆ' and not title like '%æ¨è%'
+update jobs set career='æ¨èç®—æ³•å·¥ç¨‹å¸ˆ' where title like '%æ¨èç®—æ³•%'
 
-update _202005 set career='Ãô½İ½ÌÁ·' where title like '%Ãô½İ½ÌÁ·%' or title like '%agile coach%'  or title like '%Scrum Master%' 
+delete from jobs where zhinengleibie='æœç´¢ç®—æ³•å·¥ç¨‹å¸ˆ' and not title like '%æœç´¢%'
+update jobs set career='æœç´¢ç®—æ³•å·¥ç¨‹å¸ˆ' where title like '%æœç´¢ç®—æ³•%' or title like '%Search Algorithm%'
+update jobs set career='åä½œå¼Šç®—æ³•å·¥ç¨‹å¸ˆ' where title like '%åä½œå¼Š%'
 
-update _202005 set career='Cocos2d-x¿ª·¢¹¤³ÌÊ¦' where career='Èí¼ş¹¤³ÌÊ¦' and title like '%Cocos2d-x%' 
+update jobs set career='å›¾åƒå¤„ç†å·¥ç¨‹å¸ˆ' where title like '%å›¾åƒå¤„ç†%'
+update jobs set career='å›¾åƒç®—æ³•å·¥ç¨‹å¸ˆ' where title like '%å›¾åƒç®—æ³•%' or zhinengleibie='å›¾åƒç®—æ³•å·¥ç¨‹å¸ˆ'
+update jobs set career='äººå·¥æ™ºèƒ½' where title like '%AI%' or title like '%äººå·¥æ™ºèƒ½%' or title like '%ç¥ç»ç½‘ç»œ%'
+update jobs set career='åŒºå—é“¾å¼€å‘' where title like '%åŒºå—é“¾%' or zhinengleibie='åŒºå—é“¾å¼€å‘'
+update jobs set career='CTO' where title like '%CTO%' or title like '%é¦–å¸­æŠ€æœ¯å®˜%'  or title like '%æ™ºæ…§ç ”ç©¶é™¢é™¢é•¿%'
+update jobs set career='èŠ¯ç‰‡' where title like '%èŠ¯ç‰‡%' or title like '%SOCè®¾è®¡%'
+update jobs set career='é©±åŠ¨å·¥ç¨‹å¸ˆ'  where title like '%driver%' or title like '%é©±åŠ¨%'
+update jobs set career='æœºå™¨å­¦ä¹ ' where title like '%æœºå™¨å­¦ä¹ %' or zhinengleibie='æœºå™¨å­¦ä¹ å·¥ç¨‹å¸ˆ'
+update jobs set career='æ·±åº¦å­¦ä¹ å·¥ç¨‹å¸ˆ' where title like '%æ·±åº¦å­¦ä¹ %'
+update jobs set career='æ•°æ®ç§‘å­¦å®¶' where title like '%Data Scientist%' or  title like '%æ•°æ®ç§‘å­¦å®¶%'
 
-update _202005 set career='MES' where career='Èí¼ş¹¤³ÌÊ¦' and title like '%MES%' 
 
-update _202005 set career='Hadoop¹¤³ÌÊ¦' where title like '%Hadoop%' 
+update jobs set career='æ¶æ„å¸ˆ' where title like '%ç³»ç»Ÿæ¶æ„å¸ˆ%' or title like '%æ¶æ„å¸ˆ%' or title like '%æ¶æ„ä¸“å®¶%' or title like '%architect%'   or title like '%æ¶æ„ç ”å‘%'
+update jobs set career='æŠ€æœ¯ä¸»ç®¡' where title like '%ä¸»ç®¡%' or title like '%leader%' 
 
-update _202005 set career='Ç¶ÈëÊ½Èí¼ş¿ª·¢' where title like '%Ç¶ÈëÊ½%' or title like '%FPGA%' 
+update jobs set career='åˆ†å¸ƒå¼' where career='è½¯ä»¶å·¥ç¨‹å¸ˆ' and title like '%åˆ†å¸ƒå¼%' 
 
-delete from _202005 where career='ÈË¹¤ÖÇÄÜ' and not title like '%ÈË¹¤ÖÇÄÜ%'
+update jobs set career='æ•æ·æ•™ç»ƒ' where title like '%æ•æ·æ•™ç»ƒ%' or title like '%agile coach%'  or title like '%Scrum Master%' 
+
+update jobs set career='Cocos2d-xå¼€å‘å·¥ç¨‹å¸ˆ' where career='è½¯ä»¶å·¥ç¨‹å¸ˆ' and title like '%Cocos2d-x%' 
+
+update jobs set career='MES' where career='è½¯ä»¶å·¥ç¨‹å¸ˆ' and title like '%MES%' 
+
+update jobs set career='Hadoopå·¥ç¨‹å¸ˆ' where title like '%Hadoop%' 
+
+update jobs set career='åµŒå…¥å¼è½¯ä»¶å¼€å‘' where title like '%åµŒå…¥å¼%' or title like '%FPGA%' 
+
+delete from jobs where career='äººå·¥æ™ºèƒ½' and not title like '%äººå·¥æ™ºèƒ½%'
 
 
-update _202005 set ageism=1 where job_description like '%Ëê%'
+update jobs set ageism=1 where job_description like '%å²%'
 
-update _202005 set ml_paddlepaddle=1 where job_description like '%paddlepaddle%'
-update _202005 set ml_mahout=1 where job_description like '%mahout%'
-update _202005 set ml_sklearn=1 where job_description like '%scikit-learn%' or  job_description like '%scikitlearn%' or  job_description like '%sklearn%'
-update _202005 set ml_theano=1 where job_description like '%theano%'
-update _202005 set ml_keras=1 where job_description like '%keras%'
-update _202005 set ml_mxnet=1 where job_description like '%mxnet%'
-update _202005 set ml_cntk=1 where job_description like '%cntk%'
-update _202005 set ml_caffe=1 where job_description like '%caffe%'
-update _202005 set ml_tensorflow=1 where job_description like '%tensorflow%'
-update _202005 set ml_pytorch=1 where job_description like '%pytorch%'
+update jobs set ml_paddlepaddle=1 where job_description like '%paddlepaddle%'
+update jobs set ml_mahout=1 where job_description like '%mahout%'
+update jobs set ml_sklearn=1 where job_description like '%scikit-learn%' or  job_description like '%scikitlearn%' or  job_description like '%sklearn%'
+update jobs set ml_theano=1 where job_description like '%theano%'
+update jobs set ml_keras=1 where job_description like '%keras%'
+update jobs set ml_mxnet=1 where job_description like '%mxnet%'
+update jobs set ml_cntk=1 where job_description like '%cntk%'
+update jobs set ml_caffe=1 where job_description like '%caffe%'
+update jobs set ml_tensorflow=1 where job_description like '%tensorflow%'
+update jobs set ml_pytorch=1 where job_description like '%pytorch%'
 
 
 

@@ -100,6 +100,18 @@ CREATE TABLE [dbo].[_201904](
 	[tag_rest_one_day] [bit] NOT NULL,
 	[tag_rest_two_days] [bit] NOT NULL,
 	[tag_stock] [bit] NOT NULL,
+	[ml_tensorflow] [bit] NOT NULL,
+	[ml_caffe] [bit] NOT NULL,
+	[ml_cntk] [bit] NOT NULL,
+	[ml_chainer] [bit] NOT NULL,
+	[ml_mxnet] [bit] NOT NULL,
+	[ml_keras] [bit] NOT NULL,
+	[ml_deeplearning4j] [bit] NOT NULL,
+	[ml_theano] [bit] NOT NULL,
+	[ml_sklearn] [bit] NOT NULL,
+	[ml_mahout] [bit] NOT NULL,
+	[ml_paddlepaddle] [bit] NOT NULL
+
  CONSTRAINT [PK__201904v22] PRIMARY KEY CLUSTERED 
 (
 	[job_id] ASC
