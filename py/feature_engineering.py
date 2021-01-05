@@ -26,7 +26,7 @@ year_month=f'{year}{month:02}'
 class Job():
     #basic info
     job_id=""
-    year_month="202009"
+    year_month=year_month
     title=""
     page_title=''
     
@@ -45,6 +45,7 @@ class Job():
     published_on_weekend=False  
     
     monthly_salary=0
+    salary_string=''
     
     #职能类别 软件工程师 算法工程师 系统架构设计师
     zhinengleibie=''
@@ -418,6 +419,7 @@ def file2job(file, zhinengleibie, province):
         return None
     salary_string=salary_tag.text
     #零时工，不统计
+    job.salary_string = salary_string
     job.get_salary(salary_string)
     if job.monthly_salary==-1:
         return None
